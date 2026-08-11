@@ -11,7 +11,9 @@
     <p class="mes-atual" id="mesAtual"></p>
 </div>
 
-<button class="btn-mes" onclick="abrirReceitas()">💰</button>
+<button class="btn-mes" id="btnReceitas">
+    💰
+</button>
 
 </header><main class="container"><!-- RESUMO -->
 
@@ -19,13 +21,13 @@
 
     <div class="card resumo-card">
         <span>💰 Receitas</span>
-        <strong id="receitas">R$ 0,00</strong>
+        <strong id="totalReceitas">R$ 0,00</strong>
         <small>Luiza + Daniel</small>
     </div>
 
     <div class="card resumo-card">
         <span>💸 Gastos</span>
-        <strong id="gastos">R$ 0,00</strong>
+        <strong id="totalGastos">R$ 0,00</strong>
         <small>Todos os gastos</small>
     </div>
 
@@ -37,14 +39,14 @@
 
     <div class="card resumo-card">
         <span>📊 Comprometido</span>
-        <strong id="porcentagem">0%</strong>
+        <strong id="percentual">0%</strong>
         <small>Da renda mensal</small>
     </div>
 
 </section>
 
 
-<!-- CONTROLE DO MÊS -->
+<!-- CONTROLE -->
 
 <section class="saldo-mes card">
 
@@ -54,8 +56,7 @@
         <h2>Quanto ainda podemos gastar?</h2>
 
         <p>
-            Esse valor é atualizado conforme vocês registram
-            receitas e gastos.
+            O valor será atualizado automaticamente.
         </p>
     </div>
 
@@ -72,7 +73,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">🏠</span>
 
             <div>
@@ -81,8 +82,10 @@
             </div>
         </div>
 
-        <button class="btn-adicionar"
-            onclick="abrirGasto('casa')">
+        <button
+            class="btn-adicionar"
+            data-categoria="casa"
+        >
             + Adicionar
         </button>
 
@@ -100,9 +103,13 @@
 
             <h3>Gastos fixos da casa</h3>
 
-            <strong id="casa-fixos">R$ 0,00</strong>
+            <strong id="casaFixos">
+                R$ 0,00
+            </strong>
 
-            <p>Condomínio, financiamento, internet...</p>
+            <p>
+                Condomínio, financiamento, internet...
+            </p>
 
         </div>
 
@@ -116,9 +123,13 @@
 
             <h3>Gastos variáveis da casa</h3>
 
-            <strong id="casa-variaveis">R$ 0,00</strong>
+            <strong id="casaVariaveis">
+                R$ 0,00
+            </strong>
 
-            <p>Mercado, delivery, lazer, compras...</p>
+            <p>
+                Mercado, delivery, lazer, compras...
+            </p>
 
         </div>
 
@@ -133,7 +144,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">👩🏻</span>
 
             <div>
@@ -142,8 +153,10 @@
             </div>
         </div>
 
-        <button class="btn-adicionar"
-            onclick="abrirGasto('luiza')">
+        <button
+            class="btn-adicionar"
+            data-categoria="luiza"
+        >
             + Adicionar
         </button>
 
@@ -156,14 +169,20 @@
 
             <div class="gasto-topo">
                 <span>🧠</span>
-                <span class="tag profissional">Profissional</span>
+                <span class="tag profissional">
+                    Profissional
+                </span>
             </div>
 
             <h3>Gastos com a clínica</h3>
 
-            <strong id="luiza-clinica">R$ 0,00</strong>
+            <strong id="luizaClinica">
+                R$ 0,00
+            </strong>
 
-            <p>Clínica, materiais, cursos, impostos...</p>
+            <p>
+                Clínica, materiais, cursos, impostos...
+            </p>
 
         </div>
 
@@ -172,14 +191,20 @@
 
             <div class="gasto-topo">
                 <span>🌷</span>
-                <span class="tag pessoal">Pessoal</span>
+                <span class="tag pessoal">
+                    Pessoal
+                </span>
             </div>
 
             <h3>Gastos pessoais</h3>
 
-            <strong id="luiza-pessoal">R$ 0,00</strong>
+            <strong id="luizaPessoal">
+                R$ 0,00
+            </strong>
 
-            <p>Roupas, beleza, lazer, compras...</p>
+            <p>
+                Roupas, beleza, lazer, compras...
+            </p>
 
         </div>
 
@@ -194,7 +219,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">👨🏻</span>
 
             <div>
@@ -203,8 +228,10 @@
             </div>
         </div>
 
-        <button class="btn-adicionar"
-            onclick="abrirGasto('daniel')">
+        <button
+            class="btn-adicionar"
+            data-categoria="daniel"
+        >
             + Adicionar
         </button>
 
@@ -217,14 +244,20 @@
 
             <div class="gasto-topo">
                 <span>👤</span>
-                <span class="tag pessoal">Pessoal</span>
+                <span class="tag pessoal">
+                    Pessoal
+                </span>
             </div>
 
             <h3>Gastos pessoais</h3>
 
-            <strong id="daniel-pessoal">R$ 0,00</strong>
+            <strong id="danielPessoal">
+                R$ 0,00
+            </strong>
 
-            <p>Compras, lazer e outras despesas</p>
+            <p>
+                Compras, lazer e outras despesas
+            </p>
 
         </div>
 
@@ -239,7 +272,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">🚗</span>
 
             <div>
@@ -248,8 +281,10 @@
             </div>
         </div>
 
-        <button class="btn-adicionar"
-            onclick="abrirGasto('carro')">
+        <button
+            class="btn-adicionar"
+            data-categoria="carro"
+        >
             + Adicionar
         </button>
 
@@ -262,14 +297,20 @@
 
             <div class="gasto-topo">
                 <span>🔒</span>
-                <span class="tag fixa">Fixo</span>
+                <span class="tag fixa">
+                    Fixo
+                </span>
             </div>
 
             <h3>Gastos fixos</h3>
 
-            <strong id="carro-fixos">R$ 0,00</strong>
+            <strong id="carroFixos">
+                R$ 0,00
+            </strong>
 
-            <p>Seguro, financiamento, estacionamento...</p>
+            <p>
+                Seguro, financiamento, estacionamento...
+            </p>
 
         </div>
 
@@ -278,14 +319,20 @@
 
             <div class="gasto-topo">
                 <span>⛽</span>
-                <span class="tag variavel">Variável</span>
+                <span class="tag variavel">
+                    Variável
+                </span>
             </div>
 
             <h3>Gastos variáveis</h3>
 
-            <strong id="carro-variaveis">R$ 0,00</strong>
+            <strong id="carroVariaveis">
+                R$ 0,00
+            </strong>
 
-            <p>Combustível, manutenção, lavagem...</p>
+            <p>
+                Combustível, manutenção, lavagem...
+            </p>
 
         </div>
 
@@ -300,7 +347,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">💳</span>
 
             <div>
@@ -322,9 +369,13 @@
 
             <h3>Cartão Luiza</h3>
 
-            <strong id="cartao-luiza">R$ 0,00</strong>
+            <strong id="cartaoLuiza">
+                R$ 0,00
+            </strong>
 
-            <p>Fatura atual</p>
+            <p>
+                Fatura atual
+            </p>
 
         </div>
 
@@ -337,9 +388,13 @@
 
             <h3>Cartão Daniel</h3>
 
-            <strong id="cartao-daniel">R$ 0,00</strong>
+            <strong id="cartaoDaniel">
+                R$ 0,00
+            </strong>
 
-            <p>Fatura atual</p>
+            <p>
+                Fatura atual
+            </p>
 
         </div>
 
@@ -354,7 +409,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">🎯</span>
 
             <div>
@@ -375,15 +430,22 @@
                 <p>Meta: R$ 20.000,00</p>
             </div>
 
-            <strong>R$ 0,00</strong>
+            <strong id="valorMeta">
+                R$ 0,00
+            </strong>
 
         </div>
 
         <div class="barra">
-            <div class="progresso"></div>
+            <div
+                class="progresso"
+                id="progressoMeta"
+            ></div>
         </div>
 
-        <small>0% concluído</small>
+        <small id="percentualMeta">
+            0% concluído
+        </small>
 
     </div>
 
@@ -396,7 +458,7 @@
 
     <div class="titulo-secao">
 
-        <div>
+        <div class="titulo-esquerda">
             <span class="icone">📋</span>
 
             <div>
@@ -407,7 +469,7 @@
 
     </div>
 
-    <div id="listaLancamentos" class="lista-lancamentos">
+    <div id="listaLancamentos">
         <p class="vazio">
             Nenhum lançamento neste mês.
         </p>
@@ -416,32 +478,46 @@
 </section>
 
 </main><footer>
-    <p>Feito para nós dois 🤍</p>
-</footer><!-- MODAL DE GASTO --><div id="modalGasto" class="modal"><div class="modal-conteudo">
+    Feito para nós dois 🤍
+</footer><!-- =====================================
+     MODAL DE GASTO
+===================================== --><div
+    class="modal"
+    id="modalGasto"
+><div class="modal-conteudo">
 
-    <button class="fechar" onclick="fecharModal('modalGasto')">
+    <button
+        class="fechar"
+        id="fecharGasto"
+    >
         ×
     </button>
 
-    <p class="mini-titulo">NOVO LANÇAMENTO</p>
+    <p class="mini-titulo">
+        NOVO LANÇAMENTO
+    </p>
 
     <h2>Adicionar gasto</h2>
+
 
     <form id="formGasto">
 
         <label>
             Descrição
+
             <input
                 type="text"
                 id="descricao"
                 placeholder="Ex.: Mercado"
                 required
             >
+
         </label>
 
 
         <label>
             Valor
+
             <input
                 type="number"
                 id="valor"
@@ -450,25 +526,35 @@
                 min="0"
                 required
             >
+
         </label>
 
 
         <label>
             Data
+
             <input
                 type="date"
                 id="data"
                 required
             >
+
         </label>
 
 
         <label>
-            Tipo de gasto
+            Tipo
 
-            <select id="tipo" required>
-                <option value="variavel">Variável</option>
-                <option value="fixo">Fixo</option>
+            <select id="tipo">
+
+                <option value="variavel">
+                    Variável
+                </option>
+
+                <option value="fixo">
+                    Fixo
+                </option>
+
             </select>
 
         </label>
@@ -477,13 +563,18 @@
         <label>
             Categoria
 
-            <select id="subcategoria" required>
-            </select>
+            <select
+                id="subcategoria"
+                required
+            ></select>
 
         </label>
 
 
-        <button class="btn-confirmar" type="submit">
+        <button
+            type="submit"
+            class="btn-confirmar"
+        >
             Adicionar gasto
         </button>
 
@@ -491,16 +582,26 @@
 
 </div>
 
-</div><!-- MODAL DE RECEITAS --><div id="modalReceitas" class="modal"><div class="modal-conteudo">
+</div><!-- =====================================
+     MODAL DE RECEITAS
+===================================== --><div
+    class="modal"
+    id="modalReceitas"
+><div class="modal-conteudo">
 
-    <button class="fechar"
-        onclick="fecharModal('modalReceitas')">
+    <button
+        class="fechar"
+        id="fecharReceitas"
+    >
         ×
     </button>
 
-    <p class="mini-titulo">RENDA DO MÊS</p>
+    <p class="mini-titulo">
+        RENDA DO MÊS
+    </p>
 
     <h2>Nossas receitas</h2>
+
 
     <form id="formReceitas">
 
@@ -546,7 +647,10 @@
         </label>
 
 
-        <button class="btn-confirmar" type="submit">
+        <button
+            type="submit"
+            class="btn-confirmar"
+        >
             Salvar receitas
         </button>
 
@@ -554,5 +658,5 @@
 
 </div>
 
-</div><script src="script.js"></script></body>
+</div><script src="./script.js"></script></body>
 </html>
