@@ -1,0 +1,392 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nossa Vida Financeira</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head><body><header class="topo">
+    <div>
+        <p class="mini-titulo">NOSSA CASA</p>
+        <h1>Nossa Vida Financeira</h1>
+        <p class="mes-atual">Agosto de 2026</p>
+    </div>
+
+    <button class="btn-mes">⚙️</button>
+</header>
+
+
+<main class="container">
+
+    <!-- RESUMO -->
+
+    <section class="resumo">
+
+        <div class="card resumo-card">
+            <span>💰 Receitas</span>
+            <strong id="receitas">R$ 0,00</strong>
+            <small>Luiza + Daniel</small>
+        </div>
+
+        <div class="card resumo-card">
+            <span>💸 Gastos</span>
+            <strong id="gastos">R$ 0,00</strong>
+            <small>Todos os gastos</small>
+        </div>
+
+        <div class="card resumo-card destaque">
+            <span>✨ Saldo</span>
+            <strong id="saldo">R$ 0,00</strong>
+            <small>Disponível no mês</small>
+        </div>
+
+        <div class="card resumo-card">
+            <span>📊 Comprometido</span>
+            <strong id="porcentagem">0%</strong>
+            <small>Da renda mensal</small>
+        </div>
+
+    </section>
+
+
+    <!-- QUANTO PODE GASTAR -->
+
+    <section class="saldo-mes card">
+
+        <div>
+            <p class="mini-titulo">CONTROLE DO MÊS</p>
+
+            <h2>Quanto ainda podemos gastar?</h2>
+
+            <p>
+                Esse valor será atualizado automaticamente
+                conforme vocês registrarem os gastos.
+            </p>
+        </div>
+
+        <div class="valor-disponivel" id="disponivel">
+            R$ 0,00
+        </div>
+
+    </section>
+
+
+    <!-- CASA -->
+
+    <section class="categoria">
+
+        <div class="titulo-secao">
+            <div>
+                <span class="icone">🏠</span>
+                <div>
+                    <h2>Gastos da casa</h2>
+                    <p>Despesas compartilhadas</p>
+                </div>
+            </div>
+
+            <button class="btn-adicionar">+ Adicionar</button>
+        </div>
+
+
+        <div class="cards-gastos">
+
+            <div class="card gasto-card">
+                <div class="gasto-topo">
+                    <span>🏡</span>
+                    <span class="tag fixa">Fixo</span>
+                </div>
+
+                <h3>Gastos fixos da casa</h3>
+
+                <strong id="casa-fixos">R$ 0,00</strong>
+
+                <p>Condomínio, financiamento, internet...</p>
+            </div>
+
+
+            <div class="card gasto-card">
+                <div class="gasto-topo">
+                    <span>🛒</span>
+                    <span class="tag variavel">Variável</span>
+                </div>
+
+                <h3>Gastos variáveis da casa</h3>
+
+                <strong id="casa-variaveis">R$ 0,00</strong>
+
+                <p>Mercado, delivery, lazer, compras...</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- LUIZA -->
+
+    <section class="categoria">
+
+        <div class="titulo-secao">
+            <div>
+                <span class="icone">👩🏻</span>
+
+                <div>
+                    <h2>Gastos Luiza</h2>
+                    <p>Despesas pessoais e profissionais</p>
+                </div>
+            </div>
+
+            <button class="btn-adicionar">+ Adicionar</button>
+        </div>
+
+
+        <div class="cards-gastos">
+
+            <div class="card gasto-card">
+                <div class="gasto-topo">
+                    <span>🧠</span>
+                    <span class="tag profissional">Profissional</span>
+                </div>
+
+                <h3>Gastos com a clínica</h3>
+
+                <strong id="luiza-clinica">R$ 0,00</strong>
+
+                <p>Clínica, materiais, cursos, impostos...</p>
+            </div>
+
+
+            <div class="card gasto-card">
+                <div class="gasto-topo">
+                    <span>🌷</span>
+                    <span class="tag pessoal">Pessoal</span>
+                </div>
+
+                <h3>Gastos pessoais</h3>
+
+                <strong id="luiza-pessoal">R$ 0,00</strong>
+
+                <p>Roupas, beleza, lazer, compras...</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DANIEL -->
+
+    <section class="categoria">
+
+        <div class="titulo-secao">
+
+            <div>
+                <span class="icone">👨🏻</span>
+
+                <div>
+                    <h2>Gastos Daniel</h2>
+                    <p>Despesas pessoais</p>
+                </div>
+            </div>
+
+            <button class="btn-adicionar">+ Adicionar</button>
+
+        </div>
+
+
+        <div class="cards-gastos">
+
+            <div class="card gasto-card simples">
+
+                <div class="gasto-topo">
+                    <span>👤</span>
+                    <span class="tag pessoal">Pessoal</span>
+                </div>
+
+                <h3>Gastos pessoais</h3>
+
+                <strong id="daniel-pessoal">R$ 0,00</strong>
+
+                <p>Compras, lazer e outras despesas</p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CARRO -->
+
+    <section class="categoria">
+
+        <div class="titulo-secao">
+
+            <div>
+                <span class="icone">🚗</span>
+
+                <div>
+                    <h2>Gastos do carro</h2>
+                    <p>Custos do veículo</p>
+                </div>
+            </div>
+
+            <button class="btn-adicionar">+ Adicionar</button>
+
+        </div>
+
+
+        <div class="cards-gastos">
+
+            <div class="card gasto-card">
+
+                <div class="gasto-topo">
+                    <span>🔒</span>
+                    <span class="tag fixa">Fixo</span>
+                </div>
+
+                <h3>Gastos fixos</h3>
+
+                <strong id="carro-fixos">R$ 0,00</strong>
+
+                <p>Seguro, financiamento, estacionamento...</p>
+
+            </div>
+
+
+            <div class="card gasto-card">
+
+                <div class="gasto-topo">
+                    <span>⛽</span>
+                    <span class="tag variavel">Variável</span>
+                </div>
+
+                <h3>Gastos variáveis</h3>
+
+                <strong id="carro-variaveis">R$ 0,00</strong>
+
+                <p>Combustível, manutenção, lavagem...</p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CARTÕES -->
+
+    <section class="categoria">
+
+        <div class="titulo-secao">
+
+            <div>
+                <span class="icone">💳</span>
+
+                <div>
+                    <h2>Cartões</h2>
+                    <p>Acompanhamento das faturas</p>
+                </div>
+            </div>
+
+            <button class="btn-adicionar">+ Adicionar</button>
+
+        </div>
+
+
+        <div class="cards-gastos">
+
+            <div class="card gasto-card">
+
+                <div class="gasto-topo">
+                    <span>💳</span>
+                </div>
+
+                <h3>Cartão Luiza</h3>
+
+                <strong id="cartao-luiza">R$ 0,00</strong>
+
+                <p>Fatura atual</p>
+
+            </div>
+
+
+            <div class="card gasto-card">
+
+                <div class="gasto-topo">
+                    <span>💳</span>
+                </div>
+
+                <h3>Cartão Daniel</h3>
+
+                <strong id="cartao-daniel">R$ 0,00</strong>
+
+                <p>Fatura atual</p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- METAS -->
+
+    <section class="categoria">
+
+        <div class="titulo-secao">
+
+            <div>
+                <span class="icone">🎯</span>
+
+                <div>
+                    <h2>Nossas metas</h2>
+                    <p>Planos para o futuro</p>
+                </div>
+            </div>
+
+            <button class="btn-adicionar">+ Nova meta</button>
+
+        </div>
+
+
+        <div class="card meta-card">
+
+            <div class="meta-info">
+
+                <div>
+                    <h3>Reserva de emergência</h3>
+                    <p>Meta: R$ 20.000,00</p>
+                </div>
+
+                <strong>R$ 0,00</strong>
+
+            </div>
+
+            <div class="barra">
+
+                <div class="progresso" style="width: 0%;"></div>
+
+            </div>
+
+            <small>0% concluído</small>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<footer>
+
+    <p>Feito para nós dois 🤍</p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
