@@ -1,41 +1,63 @@
-/*
+/* =========================================
 NOSSA VIDA FINANCEIRA
-VERSÃO 2
+VERSÃO FUNCIONAL
+========================================= */
 
-Agora o site possui:
+/* =========================================
+DADOS
+========================================= */
 
-✓ Cadastro de gastos
-✓ Cadastro de receitas
-✓ Exclusão de gastos
-✓ Cálculo automático
-✓ Separação por categoria
-✓ Salvamento no navegador
+let dados;
 
-*/
+try {
 
-// ==========================================
-// BANCO DE DADOS
-// ==========================================
+dados = JSON.parse(
+    localStorage.getItem("nossaVidaFinanceira")
+);
 
-let dados = JSON.parse(
-localStorage.getItem("nossaVidaFinanceira")
-) || {
+} catch (erro) {
 
-receitas: {
-    luiza: 0,
-    daniel: 0,
-    outras: 0
-},
+dados = null;
 
-gastos: []
+}
+
+if (!dados) {
+
+dados = {
+
+    receitas: {
+        luiza: 0,
+        daniel: 0,
+        outras: 0
+    },
+
+    gastos: []
 
 };
 
-// ==========================================
-// SALVAR
-// ==========================================
+}
 
-function salvar() {
+/* =========================================
+ELEMENTOS
+========================================= */
+
+const modalGasto =
+document.getElementById("modalGasto");
+
+const modalReceitas =
+document.getElementById("modalReceitas");
+
+const formGasto =
+document.getElementById("formGasto");
+
+const formReceitas =
+document.getElementById("formReceitas");
+
+/* =========================================
+SALVAR
+========================================= */
+
+function salvarDados() {
 
 localStorage.setItem(
     "nossaVidaFinanceira",
@@ -44,430 +66,32 @@ localStorage.setItem(
 
 }
 
-// ==========================================
-// DINHEIRO
-// ==========================================
+/* =========================================
+DINHEIRO
+========================================= */
 
 function dinheiro(valor) {
 
-return Number(valor).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-});
-
-}
-
-// ==========================================
-// MÊS ATUAL
-// ==========================================
-
-function definirMes() {
-
-const agora = new Date();
-
-const texto = agora.toLocaleDateString(
+return Number(valor || 0).toLocaleString(
     "pt-BR",
     {
-        month: "long",
-        year: "numeric"
+        style: "currency",
+        currency: "BRL"
     }
 );
 
-document.getElementById("mesAtual").textContent =
-    texto.charAt(0).toUpperCase() + texto.slice(1);
-
 }
 
-// ==========================================
-// CALCULAR TOTAL
-// ==========================================
+/* =========================================
+DATA DE HOJE
+========================================= */
 
-function totalGastos() {
+function hoje() {
 
 const agora = new Date();
 
-const mesAtual = agora.getMonth();
-const anoAtual = agora.getFullYear();
-
-return dados.gastos
-    .filter(gasto => {
-
-        const data = new Date(
-            gasto.data + "T12:00:00"
-        );
-
-        return (
-            data.getMonth() === mesAtual &&
-            data.getFullYear() === anoAtual
-        );
-
-    })
-    .reduce(
-        (total, gasto) =>
-            total + Number(gasto.valor),
-        0
-    );
-
-}
-
-// ==========================================
-// ATUALIZAR PAINEL
-// ==========================================
-
-function atualizarPainel() {
-
-const agora = new Date();
-
-const mesAtual = agora.getMonth();
-const anoAtual = agora.getFullYear();
-
-
-const gastosMes = dados.gastos.filter(gasto => {
-
-    const data = new Date(
-        gasto.data + "T12:00:00"
-    );
-
-    return (
-        data.getMonth() === mesAtual &&
-        data.getFullYear() === anoAtual
-    );
-
-});
-
-
-const receitas =
-    Number(dados.receitas.luiza) +
-    Number(dados.receitas.daniel) +
-    Number(dados.receitas.outras);
-
-
-const gastos =
-    gastosMes.reduce(
-        (total, gasto) =>
-            total + Number(gasto.valor),
-        0
-    );
-
-
-const saldo = receitas - gastos;
-
-
-const porcentagem =
-    receitas > 0
-        ? (gastos / receitas) * 100
-        : 0;
-
-
-// RESUMO
-
-document.getElementById("receitas")
-    .textContent = dinheiro(receitas);
-
-document.getElementById("gastos")
-    .textContent = dinheiro(gastos);
-
-document.getElementById("saldo")
-    .textContent = dinheiro(saldo);
-
-document.getElementById("disponivel")
-    .textContent = dinheiro(saldo);
-
-document.getElementById("porcentagem")
-    .textContent =
-    porcentagem.toFixed(0) + "%";
-
-
-// ======================================
-// CASA
-// ======================================
-
-atualizarCategoria(
-    "casa",
-    gastosMes
-);
-
-
-// ======================================
-// LUIZA
-// ======================================
-
-atualizarCategoria(
-    "luiza",
-    gastosMes
-);
-
-
-// ======================================
-// DANIEL
-// ======================================
-
-atualizarCategoria(
-    "daniel",
-    gastosMes
-);
-
-
-// ======================================
-// CARRO
-// ======================================
-
-atualizarCategoria(
-    "carro",
-    gastosMes
-);
-
-
-// ======================================
-// CARTÕES
-// ======================================
-
-const cartaoLuiza =
-    gastosMes
-        .filter(g => g.subcategoria === "cartao-luiza")
-        .reduce(
-            (t, g) => t + Number(g.valor),
-            0
-        );
-
-const cartaoDaniel =
-    gastosMes
-        .filter(g => g.subcategoria === "cartao-daniel")
-        .reduce(
-            (t, g) => t + Number(g.valor),
-            0
-        );
-
-
-document.getElementById("cartao-luiza")
-    .textContent = dinheiro(cartaoLuiza);
-
-document.getElementById("cartao-daniel")
-    .textContent = dinheiro(cartaoDaniel);
-
-
-renderizarLancamentos(
-    gastosMes
-);
-
-}
-
-// ==========================================
-// ATUALIZAR CATEGORIA
-// ==========================================
-
-function atualizarCategoria(
-categoria,
-gastosMes
-) {
-
-const gastosCategoria =
-    gastosMes.filter(
-        gasto =>
-            gasto.categoria === categoria
-    );
-
-
-const fixos =
-    gastosCategoria
-        .filter(g => g.tipo === "fixo")
-        .reduce(
-            (total, g) =>
-                total + Number(g.valor),
-            0
-        );
-
-
-const variaveis =
-    gastosCategoria
-        .filter(g => g.tipo === "variavel")
-        .reduce(
-            (total, g) =>
-                total + Number(g.valor),
-            0
-        );
-
-
-if (categoria === "casa") {
-
-    document.getElementById("casa-fixos")
-        .textContent = dinheiro(fixos);
-
-    document.getElementById("casa-variaveis")
-        .textContent = dinheiro(variaveis);
-
-}
-
-
-if (categoria === "luiza") {
-
-    const clinica =
-        gastosCategoria
-            .filter(
-                g =>
-                    g.subcategoria ===
-                    "luiza-clinica"
-            )
-            .reduce(
-                (t, g) =>
-                    t + Number(g.valor),
-                0
-            );
-
-
-    const pessoal =
-        gastosCategoria
-            .filter(
-                g =>
-                    g.subcategoria ===
-                    "luiza-pessoal"
-            )
-            .reduce(
-                (t, g) =>
-                    t + Number(g.valor),
-                0
-            );
-
-
-    document.getElementById(
-        "luiza-clinica"
-    ).textContent = dinheiro(clinica);
-
-
-    document.getElementById(
-        "luiza-pessoal"
-    ).textContent = dinheiro(pessoal);
-
-}
-
-
-if (categoria === "daniel") {
-
-    const pessoal =
-        gastosCategoria
-            .filter(
-                g =>
-                    g.subcategoria ===
-                    "daniel-pessoal"
-            )
-            .reduce(
-                (t, g) =>
-                    t + Number(g.valor),
-                0
-            );
-
-
-    document.getElementById(
-        "daniel-pessoal"
-    ).textContent = dinheiro(pessoal);
-
-}
-
-
-if (categoria === "carro") {
-
-    document.getElementById("carro-fixos")
-        .textContent = dinheiro(fixos);
-
-    document.getElementById("carro-variaveis")
-        .textContent = dinheiro(variaveis);
-
-}
-
-}
-
-// ==========================================
-// ABRIR GASTO
-// ==========================================
-
-function abrirGasto(categoria) {
-
-const select =
-    document.getElementById("subcategoria");
-
-
-select.innerHTML = "";
-
-
-let opcoes = [];
-
-
-if (categoria === "casa") {
-
-    opcoes = [
-        ["casa-fixos", "Casa — gasto fixo"],
-        ["casa-variaveis", "Casa — gasto variável"]
-    ];
-
-}
-
-
-if (categoria === "luiza") {
-
-    opcoes = [
-        ["luiza-clinica", "Luiza — clínica"],
-        ["luiza-pessoal", "Luiza — pessoal"]
-    ];
-
-}
-
-
-if (categoria === "daniel") {
-
-    opcoes = [
-        ["daniel-pessoal", "Daniel — pessoal"]
-    ];
-
-}
-
-
-if (categoria === "carro") {
-
-    opcoes = [
-        ["carro-fixos", "Carro — gasto fixo"],
-        ["carro-variaveis", "Carro — gasto variável"]
-    ];
-
-}
-
-
-opcoes.forEach(
-    ([valor, texto]) => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = valor;
-        option.textContent = texto;
-
-        select.appendChild(option);
-
-    }
-);
-
-
-document.getElementById("formGasto")
-    .dataset.categoria = categoria;
-
-
-document.getElementById("data").value =
-    dataHoje();
-
-
-document.getElementById("modalGasto")
-    .classList.add("aberto");
-
-}
-
-// ==========================================
-// DATA DE HOJE
-// ==========================================
-
-function dataHoje() {
-
-const agora = new Date();
-
-const ano = agora.getFullYear();
+const ano =
+    agora.getFullYear();
 
 const mes =
     String(
@@ -483,124 +107,157 @@ return `${ano}-${mes}-${dia}`;
 
 }
 
-// ==========================================
-// FECHAR MODAL
-// ==========================================
+/* =========================================
+ABRIR MODAL DE GASTO
+========================================= */
 
-function fecharModal(id) {
+function abrirGasto(categoria) {
 
-document.getElementById(id)
-    .classList.remove("aberto");
-
-}
-
-// ==========================================
-// CADASTRAR GASTO
-// ==========================================
-
-document.getElementById(
-"formGasto"
-).addEventListener(
-"submit",
-function(event) {
-
-    event.preventDefault();
-
-
-    const descricao =
-        document.getElementById(
-            "descricao"
-        ).value.trim();
-
-
-    const valor =
-        Number(
-            document.getElementById(
-                "valor"
-            ).value
-        );
-
-
-    const data =
-        document.getElementById(
-            "data"
-        ).value;
-
-
-    const tipo =
-        document.getElementById(
-            "tipo"
-        ).value;
-
-
-    const subcategoria =
-        document.getElementById(
-            "subcategoria"
-        ).value;
-
-
-    const categoria =
-        this.dataset.categoria;
-
-
-    if (
-        !descricao ||
-        !valor ||
-        !data
-    ) {
-
-        alert(
-            "Preencha todos os campos."
-        );
-
-        return;
-
-    }
-
-
-    const gasto = {
-
-        id: Date.now(),
-
-        descricao,
-
-        valor,
-
-        data,
-
-        tipo,
-
-        categoria,
-
-        subcategoria
-
-    };
-
-
-    dados.gastos.push(gasto);
-
-
-    salvar();
-
-
-    atualizarPainel();
-
-
-    this.reset();
-
-
-    fecharModal(
-        "modalGasto"
+const select =
+    document.getElementById(
+        "subcategoria"
     );
 
+select.innerHTML = "";
+
+
+if (categoria === "casa") {
+
+    adicionarOpcao(
+        select,
+        "casa-fixos",
+        "Casa — gasto fixo"
+    );
+
+    adicionarOpcao(
+        select,
+        "casa-variaveis",
+        "Casa — gasto variável"
+    );
 
 }
 
+
+if (categoria === "luiza") {
+
+    adicionarOpcao(
+        select,
+        "luiza-clinica",
+        "Luiza — clínica"
+    );
+
+    adicionarOpcao(
+        select,
+        "luiza-pessoal",
+        "Luiza — pessoal"
+    );
+
+}
+
+
+if (categoria === "daniel") {
+
+    adicionarOpcao(
+        select,
+        "daniel-pessoal",
+        "Daniel — pessoal"
+    );
+
+}
+
+
+if (categoria === "carro") {
+
+    adicionarOpcao(
+        select,
+        "carro-fixos",
+        "Carro — gasto fixo"
+    );
+
+    adicionarOpcao(
+        select,
+        "carro-variaveis",
+        "Carro — gasto variável"
+    );
+
+}
+
+
+formGasto.dataset.categoria =
+    categoria;
+
+
+document.getElementById("data").value =
+    hoje();
+
+
+document.getElementById("descricao").value =
+    "";
+
+document.getElementById("valor").value =
+    "";
+
+
+modalGasto.classList.add("aberto");
+
+
+setTimeout(
+    function() {
+
+        document
+            .getElementById("descricao")
+            .focus();
+
+    },
+    100
 );
 
-// ==========================================
-// RECEITAS
-// ==========================================
+}
+
+/* =========================================
+OPÇÃO DO SELECT
+========================================= */
+
+function adicionarOpcao(
+select,
+valor,
+texto
+) {
+
+const option =
+    document.createElement("option");
+
+option.value = valor;
+
+option.textContent = texto;
+
+select.appendChild(option);
+
+}
+
+/* =========================================
+FECHAR MODAIS
+========================================= */
+
+function fecharGasto() {
+
+modalGasto.classList.remove(
+    "aberto"
+);
+
+}
+
+function fecharReceitas() {
+
+modalReceitas.classList.remove(
+    "aberto"
+);
+
+}
+
+/* =========================================
+RECEITAS
+========================================= */
 
 function abrirReceitas() {
 
@@ -622,15 +279,160 @@ document.getElementById(
     dados.receitas.outras || "";
 
 
-document.getElementById(
-    "modalReceitas"
-).classList.add("aberto");
+modalReceitas.classList.add(
+    "aberto"
+);
 
 }
 
-document.getElementById(
-"formReceitas"
-).addEventListener(
+/* =========================================
+EVENTOS DOS BOTÕES
+========================================= */
+
+document
+.getElementById("btnReceitas")
+.addEventListener(
+"click",
+abrirReceitas
+);
+
+document
+.getElementById("fecharGasto")
+.addEventListener(
+"click",
+fecharGasto
+);
+
+document
+.getElementById("fecharReceitas")
+.addEventListener(
+"click",
+fecharReceitas
+);
+
+/* BOTÕES + ADICIONAR */
+
+document
+.querySelectorAll(".btn-adicionar")
+.forEach(
+function(botao) {
+
+        botao.addEventListener(
+            "click",
+            function() {
+
+                abrirGasto(
+                    botao.dataset.categoria
+                );
+
+            }
+        );
+
+    }
+);
+
+/* =========================================
+SALVAR GASTO
+========================================= */
+
+formGasto.addEventListener(
+"submit",
+function(event) {
+
+    event.preventDefault();
+
+
+    const descricao =
+        document
+            .getElementById("descricao")
+            .value
+            .trim();
+
+
+    const valor =
+        Number(
+            document
+                .getElementById("valor")
+                .value
+        );
+
+
+    const data =
+        document
+            .getElementById("data")
+            .value;
+
+
+    const tipo =
+        document
+            .getElementById("tipo")
+            .value;
+
+
+    const subcategoria =
+        document
+            .getElementById("subcategoria")
+            .value;
+
+
+    const categoria =
+        formGasto.dataset.categoria;
+
+
+    if (
+        !descricao ||
+        valor <= 0 ||
+        !data
+    ) {
+
+        alert(
+            "Preencha a descrição, o valor e a data."
+        );
+
+        return;
+
+    }
+
+
+    const novoGasto = {
+
+        id: Date.now(),
+
+        descricao: descricao,
+
+        valor: valor,
+
+        data: data,
+
+        tipo: tipo,
+
+        categoria: categoria,
+
+        subcategoria: subcategoria
+
+    };
+
+
+    dados.gastos.push(
+        novoGasto
+    );
+
+
+    salvarDados();
+
+    atualizarTudo();
+
+    fecharGasto();
+
+}
+
+);
+
+/* =========================================
+SALVAR RECEITAS
+========================================= */
+
+formReceitas.addEventListener(
 "submit",
 function(event) {
 
@@ -639,49 +441,383 @@ function(event) {
 
     dados.receitas.luiza =
         Number(
-            document.getElementById(
-                "receitaLuiza"
-            ).value
+            document
+                .getElementById(
+                    "receitaLuiza"
+                )
+                .value
         ) || 0;
 
 
     dados.receitas.daniel =
         Number(
-            document.getElementById(
-                "receitaDaniel"
-            ).value
+            document
+                .getElementById(
+                    "receitaDaniel"
+                )
+                .value
         ) || 0;
 
 
     dados.receitas.outras =
         Number(
-            document.getElementById(
-                "outrasReceitas"
-            ).value
+            document
+                .getElementById(
+                    "outrasReceitas"
+                )
+                .value
         ) || 0;
 
 
-    salvar();
+    salvarDados();
 
+    atualizarTudo();
 
-    atualizarPainel();
-
-
-    fecharModal(
-        "modalReceitas"
-    );
+    fecharReceitas();
 
 }
 
 );
 
-// ==========================================
-// LISTA DE LANÇAMENTOS
-// ==========================================
+/* =========================================
+GASTOS DO MÊS
+========================================= */
 
-function renderizarLancamentos(
-gastosMes
-) {
+function gastosDoMes() {
+
+const agora =
+    new Date();
+
+const mes =
+    agora.getMonth();
+
+const ano =
+    agora.getFullYear();
+
+
+return dados.gastos.filter(
+    function(gasto) {
+
+        const data =
+            new Date(
+                gasto.data +
+                "T12:00:00"
+            );
+
+        return (
+            data.getMonth() === mes &&
+            data.getFullYear() === ano
+        );
+
+    }
+);
+
+}
+
+/* =========================================
+ATUALIZAR TUDO
+========================================= */
+
+function atualizarTudo() {
+
+const gastos =
+    gastosDoMes();
+
+
+const receitas =
+    Number(
+        dados.receitas.luiza
+    ) +
+
+    Number(
+        dados.receitas.daniel
+    ) +
+
+    Number(
+        dados.receitas.outras
+    );
+
+
+const totalGastos =
+    gastos.reduce(
+        function(total, gasto) {
+
+            return (
+                total +
+                Number(gasto.valor)
+            );
+
+        },
+        0
+    );
+
+
+const saldo =
+    receitas -
+    totalGastos;
+
+
+let percentual = 0;
+
+
+if (receitas > 0) {
+
+    percentual =
+        (totalGastos / receitas) *
+        100;
+
+}
+
+
+document.getElementById(
+    "totalReceitas"
+).textContent =
+    dinheiro(receitas);
+
+
+document.getElementById(
+    "totalGastos"
+).textContent =
+    dinheiro(totalGastos);
+
+
+document.getElementById(
+    "saldo"
+).textContent =
+    dinheiro(saldo);
+
+
+document.getElementById(
+    "disponivel"
+).textContent =
+    dinheiro(saldo);
+
+
+document.getElementById(
+    "percentual"
+).textContent =
+    percentual.toFixed(0) +
+    "%";
+
+
+atualizarCasa(gastos);
+
+atualizarLuiza(gastos);
+
+atualizarDaniel(gastos);
+
+atualizarCarro(gastos);
+
+atualizarCartoes(gastos);
+
+atualizarLancamentos(gastos);
+
+}
+
+/* =========================================
+CASA
+========================================= */
+
+function atualizarCasa(gastos) {
+
+const fixos =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "casa-fixos"
+        )
+    );
+
+
+const variaveis =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "casa-variaveis"
+        )
+    );
+
+
+document.getElementById(
+    "casaFixos"
+).textContent =
+    dinheiro(fixos);
+
+
+document.getElementById(
+    "casaVariaveis"
+).textContent =
+    dinheiro(variaveis);
+
+}
+
+/* =========================================
+LUIZA
+========================================= */
+
+function atualizarLuiza(gastos) {
+
+const clinica =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "luiza-clinica"
+        )
+    );
+
+
+const pessoal =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "luiza-pessoal"
+        )
+    );
+
+
+document.getElementById(
+    "luizaClinica"
+).textContent =
+    dinheiro(clinica);
+
+
+document.getElementById(
+    "luizaPessoal"
+).textContent =
+    dinheiro(pessoal);
+
+}
+
+/* =========================================
+DANIEL
+========================================= */
+
+function atualizarDaniel(gastos) {
+
+const pessoal =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "daniel-pessoal"
+        )
+    );
+
+
+document.getElementById(
+    "danielPessoal"
+).textContent =
+    dinheiro(pessoal);
+
+}
+
+/* =========================================
+CARRO
+========================================= */
+
+function atualizarCarro(gastos) {
+
+const fixos =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "carro-fixos"
+        )
+    );
+
+
+const variaveis =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "carro-variaveis"
+        )
+    );
+
+
+document.getElementById(
+    "carroFixos"
+).textContent =
+    dinheiro(fixos);
+
+
+document.getElementById(
+    "carroVariaveis"
+).textContent =
+    dinheiro(variaveis);
+
+}
+
+/* =========================================
+CARTÕES
+========================================= */
+
+function atualizarCartoes(gastos) {
+
+const luiza =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "cartao-luiza"
+        )
+    );
+
+
+const daniel =
+    somar(
+        gastos.filter(
+            g =>
+                g.subcategoria ===
+                "cartao-daniel"
+        )
+    );
+
+
+document.getElementById(
+    "cartaoLuiza"
+).textContent =
+    dinheiro(luiza);
+
+
+document.getElementById(
+    "cartaoDaniel"
+).textContent =
+    dinheiro(daniel);
+
+}
+
+/* =========================================
+SOMAR
+========================================= */
+
+function somar(lista) {
+
+return lista.reduce(
+    function(total, item) {
+
+        return (
+            total +
+            Number(item.valor)
+        );
+
+    },
+    0
+);
+
+}
+
+/* =========================================
+LANÇAMENTOS
+========================================= */
+
+function atualizarLancamentos(gastos) {
 
 const lista =
     document.getElementById(
@@ -689,7 +825,7 @@ const lista =
     );
 
 
-if (gastosMes.length === 0) {
+if (gastos.length === 0) {
 
     lista.innerHTML =
         `<p class="vazio">
@@ -702,29 +838,45 @@ if (gastosMes.length === 0) {
 
 
 const ordenados =
-    [...gastosMes].sort(
-        (a, b) =>
-            new Date(b.data) -
-            new Date(a.data)
+    [...gastos].sort(
+        function(a, b) {
+
+            return (
+                new Date(b.data) -
+                new Date(a.data)
+            );
+
+        }
     );
 
 
-lista.innerHTML =
-    ordenados.map(
-        gasto => `
+lista.innerHTML = "";
 
-        <div class="lancamento">
+
+ordenados.forEach(
+    function(gasto) {
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+        item.className =
+            "lancamento";
+
+
+        item.innerHTML = `
 
             <div class="lancamento-info">
 
                 <div class="lancamento-icone">
-                    ${iconeCategoria(gasto.categoria)}
+                    ${icone(gasto.categoria)}
                 </div>
 
                 <div>
 
                     <div class="lancamento-nome">
-                        ${escaparHTML(gasto.descricao)}
+                        ${textoSeguro(gasto.descricao)}
                     </div>
 
                     <div class="lancamento-data">
@@ -744,60 +896,42 @@ lista.innerHTML =
 
                 <button
                     class="btn-excluir"
-                    onclick="excluirGasto(${gasto.id})"
-                    title="Excluir"
+                    data-id="${gasto.id}"
                 >
                     🗑️
                 </button>
 
             </div>
 
-        </div>
-
-    `
-    ).join("");
-
-}
-
-// ==========================================
-// ÍCONE
-// ==========================================
-
-function iconeCategoria(categoria) {
-
-const icones = {
-
-    casa: "🏠",
-
-    luiza: "👩🏻",
-
-    daniel: "👨🏻",
-
-    carro: "🚗"
-
-};
+        `;
 
 
-return icones[categoria] || "💸";
+        item
+            .querySelector(
+                ".btn-excluir"
+            )
+            .addEventListener(
+                "click",
+                function() {
+
+                    excluirGasto(
+                        gasto.id
+                    );
+
+                }
+            );
+
+
+        lista.appendChild(item);
+
+    }
+);
 
 }
 
-// ==========================================
-// DATA FORMATADA
-// ==========================================
-
-function formatarData(data) {
-
-const partes =
-    data.split("-");
-
-return `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-}
-
-// ==========================================
-// EXCLUIR
-// ==========================================
+/* =========================================
+EXCLUIR
+========================================= */
 
 function excluirGasto(id) {
 
@@ -807,30 +941,83 @@ const confirmar =
     );
 
 
-if (!confirmar) return;
+if (!confirmar) {
+    return;
+}
 
 
 dados.gastos =
     dados.gastos.filter(
-        gasto =>
-            gasto.id !== id
+        function(gasto) {
+
+            return gasto.id !== id;
+
+        }
     );
 
 
-salvar();
+salvarDados();
 
-atualizarPainel();
+atualizarTudo();
 
 }
 
-// ==========================================
-// SEGURANÇA PARA DESCRIÇÃO
-// ==========================================
+/* =========================================
+ÍCONES
+========================================= */
 
-function escaparHTML(texto) {
+function icone(categoria) {
+
+if (categoria === "casa") {
+    return "🏠";
+}
+
+if (categoria === "luiza") {
+    return "👩🏻";
+}
+
+if (categoria === "daniel") {
+    return "👨🏻";
+}
+
+if (categoria === "carro") {
+    return "🚗";
+}
+
+return "💸";
+
+}
+
+/* =========================================
+DATA
+========================================= */
+
+function formatarData(data) {
+
+const partes =
+    data.split("-");
+
+
+return (
+    partes[2] +
+    "/" +
+    partes[1] +
+    "/" +
+    partes[0]
+);
+
+}
+
+/* =========================================
+SEGURANÇA
+========================================= */
+
+function textoSeguro(texto) {
 
 const div =
-    document.createElement("div");
+    document.createElement(
+        "div"
+    );
 
 div.textContent = texto;
 
@@ -838,44 +1025,71 @@ return div.innerHTML;
 
 }
 
-// ==========================================
-// FECHAR MODAIS CLICANDO FORA
-// ==========================================
+/* =========================================
+MÊS
+========================================= */
 
-document.querySelectorAll(".modal")
-.forEach(modal => {
+function mostrarMes() {
 
-    modal.addEventListener(
-        "click",
-        function(event) {
+const agora =
+    new Date();
 
-            if (
-                event.target === modal
-            ) {
 
-                modal.classList.remove(
-                    "aberto"
-                );
-
-            }
-
+let texto =
+    agora.toLocaleDateString(
+        "pt-BR",
+        {
+            month: "long",
+            year: "numeric"
         }
     );
 
-});
 
-// ==========================================
-// INICIAR
-// ==========================================
+texto =
+    texto.charAt(0).toUpperCase() +
+    texto.slice(1);
 
-document.addEventListener(
-"DOMContentLoaded",
-function() {
 
-    definirMes();
-
-    atualizarPainel();
+document.getElementById(
+    "mesAtual"
+).textContent =
+    texto;
 
 }
 
+/* =========================================
+FECHAR AO CLICAR FORA
+========================================= */
+
+document
+.querySelectorAll(".modal")
+.forEach(
+function(modal) {
+
+        modal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    modal.classList.remove(
+                        "aberto"
+                    );
+
+                }
+
+            }
+        );
+
+    }
 );
+
+/* =========================================
+INICIAR
+========================================= */
+
+mostrarMes();
+
+atualizarTudo();
