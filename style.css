@@ -114,9 +114,7 @@ background: linear-gradient(
 var(--azul-claro),
 #e4ddec
 );
-
 border: none;
-
 }
 
 .saldo-mes {
@@ -164,7 +162,7 @@ align-items: center;
 margin-bottom: 17px;
 }
 
-.titulo-secao > div {
+.titulo-esquerda {
 display: flex;
 align-items: center;
 gap: 13px;
@@ -240,11 +238,8 @@ max-width: calc(50% - 8px);
 display: flex;
 justify-content: space-between;
 align-items: center;
-
 margin-bottom: 17px;
-
 font-size: 20px;
-
 }
 
 .gasto-card h3 {
@@ -265,10 +260,8 @@ margin-top: 8px;
 .tag {
 padding: 5px 9px;
 border-radius: 20px;
-
 font-size: 10px;
 font-weight: 600;
-
 }
 
 .fixa {
@@ -293,7 +286,7 @@ color: #966d86;
 
 /* LANÇAMENTOS */
 
-.lista-lancamentos {
+#listaLancamentos {
 display: flex;
 flex-direction: column;
 gap: 10px;
@@ -323,8 +316,8 @@ width: 40px;
 height: 40px;
 
 display: flex;
-align-items: center;
 justify-content: center;
+align-items: center;
 
 background: var(--rosa-claro);
 border-radius: 12px;
@@ -356,11 +349,6 @@ border: none;
 background: transparent;
 cursor: pointer;
 font-size: 17px;
-opacity: .6;
-}
-
-.btn-excluir:hover {
-opacity: 1;
 }
 
 .vazio {
@@ -397,15 +385,10 @@ font-size: 20px;
 
 .barra {
 height: 8px;
-
 background: #eeeaf0;
-
 border-radius: 10px;
-
 margin: 20px 0 8px;
-
 overflow: hidden;
-
 }
 
 .progresso {
@@ -422,11 +405,10 @@ border-radius: 10px;
 
 }
 
-/* MODAL */
+/* MODAIS */
 
 .modal {
 position: fixed;
-
 inset: 0;
 
 background: rgba(40,40,50,.45);
@@ -438,7 +420,7 @@ justify-content: center;
 
 padding: 20px;
 
-z-index: 1000;
+z-index: 9999;
 
 }
 
@@ -500,7 +482,6 @@ gap: 17px;
 label {
 display: flex;
 flex-direction: column;
-
 gap: 7px;
 
 font-size: 13px;
@@ -559,24 +540,12 @@ margin-top: 5px;
 
 }
 
-.btn-confirmar:hover {
-opacity: .9;
-}
-
-/* FOOTER */
-
 footer {
 text-align: center;
-
 padding: 30px;
-
 color: #999;
-
 font-size: 13px;
-
 }
-
-/* RESPONSIVO */
 
 @media (max-width: 800px) {
 
@@ -617,10 +586,6 @@ font-size: 13px;
 .titulo-secao {
     align-items: flex-start;
     gap: 10px;
-}
-
-.btn-adicionar {
-    white-space: nowrap;
 }
 
 .lancamento {
