@@ -1,167 +1,669 @@
-/*
-NOSSA VIDA FINANCEIRA
-Versão inicial
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap');
 
-Nesta primeira versão os valores ainda são
-exemplos/valores iniciais.
-
-Nas próximas etapas vamos criar:
-- cadastro de receitas
-- cadastro de gastos
-- edição e exclusão
-- armazenamento dos dados
-- controle por mês
-- cartões
-- metas
-
-*/
-
-// ==========================================
-// DADOS INICIAIS
-// ==========================================
-
-const financeiro = {
-
-receitas: {
-    luiza: 0,
-    daniel: 0,
-    outras: 0
-},
-
-gastos: {
-
-    casaFixos: 0,
-    casaVariaveis: 0,
-
-    luizaClinica: 0,
-    luizaPessoal: 0,
-
-    danielPessoal: 0,
-
-    carroFixos: 0,
-    carroVariaveis: 0,
-
-    cartaoLuiza: 0,
-    cartaoDaniel: 0
+:root {
+--azul: #8ea8c3;
+--azul-claro: #c5d8e7;
+--lilas: #ada7c9;
+--rosa: #d7b9d5;
+--rosa-claro: #f0e3ea;
+--fundo: #f8f7f8;
+--texto: #3f4147;
+--texto-claro: #777a82;
+--branco: #ffffff;
+--borda: #e8e5e9;
 }
 
-};
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  }
 
-// ==========================================
-// FORMATAÇÃO DE DINHEIRO
-// ==========================================
+body {
+background: var(--fundo);
+color: var(--texto);
+font-family: "DM Sans", sans-serif;
+min-height: 100vh;
+}
 
-function dinheiro(valor) {
+.topo {
+background: linear-gradient(
+135deg,
+var(--azul-claro),
+var(--rosa-claro)
+);
 
-return valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-});
+padding: 42px 7% 38px;
+
+display: flex;
+justify-content: space-between;
+align-items: center;
 
 }
 
-// ==========================================
-// ATUALIZA O PAINEL
-// ==========================================
-
-function atualizarPainel() {
-
-const receitas =
-    financeiro.receitas.luiza +
-    financeiro.receitas.daniel +
-    financeiro.receitas.outras;
-
-
-const gastos =
-    financeiro.gastos.casaFixos +
-    financeiro.gastos.casaVariaveis +
-    financeiro.gastos.luizaClinica +
-    financeiro.gastos.luizaPessoal +
-    financeiro.gastos.danielPessoal +
-    financeiro.gastos.carroFixos +
-    financeiro.gastos.carroVariaveis +
-    financeiro.gastos.cartaoLuiza +
-    financeiro.gastos.cartaoDaniel;
-
-
-const saldo = receitas - gastos;
-
-
-let porcentagem = 0;
-
-if (receitas > 0) {
-    porcentagem = (gastos / receitas) * 100;
+.topo h1 {
+font-family: "Playfair Display", serif;
+font-size: 38px;
+font-weight: 600;
+margin: 4px 0;
 }
 
+.mini-titulo {
+font-size: 11px;
+letter-spacing: 2px;
+font-weight: 700;
+color: #687487;
+}
 
-// RESUMO
+.mes-atual {
+color: var(--texto-claro);
+}
 
-document.getElementById("receitas").textContent =
-    dinheiro(receitas);
+.btn-mes {
+border: none;
+background: rgba(255,255,255,.65);
+width: 45px;
+height: 45px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 18px;
+}
 
-document.getElementById("gastos").textContent =
-    dinheiro(gastos);
+.container {
+width: 86%;
+max-width: 1200px;
+margin: 35px auto 70px;
+}
 
-document.getElementById("saldo").textContent =
-    dinheiro(saldo);
+.card {
+background: var(--branco);
+border: 1px solid var(--borda);
+border-radius: 18px;
+padding: 22px;
+box-shadow: 0 5px 20px rgba(70,60,80,.04);
+}
 
-document.getElementById("disponivel").textContent =
-    dinheiro(saldo);
+.resumo {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 16px;
+}
 
+.resumo-card {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
 
-document.getElementById("porcentagem").textContent =
-    porcentagem.toFixed(0) + "%";
+.resumo-card span {
+color: var(--texto-claro);
+font-size: 14px;
+}
 
+.resumo-card strong {
+font-size: 25px;
+}
 
-// CASA
+.resumo-card small {
+color: #999ba2;
+}
 
-document.getElementById("casa-fixos").textContent =
-    dinheiro(financeiro.gastos.casaFixos);
+.resumo-card.destaque {
+background: linear-gradient(
+135deg,
+var(--azul-claro),
+#e4ddec
+);
 
-document.getElementById("casa-variaveis").textContent =
-    dinheiro(financeiro.gastos.casaVariaveis);
-
-
-// LUIZA
-
-document.getElementById("luiza-clinica").textContent =
-    dinheiro(financeiro.gastos.luizaClinica);
-
-document.getElementById("luiza-pessoal").textContent =
-    dinheiro(financeiro.gastos.luizaPessoal);
-
-
-// DANIEL
-
-document.getElementById("daniel-pessoal").textContent =
-    dinheiro(financeiro.gastos.danielPessoal);
-
-
-// CARRO
-
-document.getElementById("carro-fixos").textContent =
-    dinheiro(financeiro.gastos.carroFixos);
-
-document.getElementById("carro-variaveis").textContent =
-    dinheiro(financeiro.gastos.carroVariaveis);
-
-
-// CARTÕES
-
-document.getElementById("cartao-luiza").textContent =
-    dinheiro(financeiro.gastos.cartaoLuiza);
-
-document.getElementById("cartao-daniel").textContent =
-    dinheiro(financeiro.gastos.cartaoDaniel);
+border: none;
 
 }
 
-// ==========================================
-// INICIALIZAÇÃO
-// ==========================================
+.saldo-mes {
+margin: 20px 0 50px;
 
-document.addEventListener("DOMContentLoaded", function() {
+display: flex;
+justify-content: space-between;
+align-items: center;
 
-atualizarPainel();
+padding: 28px;
 
-});
+background: linear-gradient(
+    135deg,
+    #ffffff,
+    #f4eef5
+);
+
+}
+
+.saldo-mes h2 {
+font-family: "Playfair Display", serif;
+margin: 5px 0;
+font-size: 25px;
+}
+
+.saldo-mes p:not(.mini-titulo) {
+color: var(--texto-claro);
+font-size: 14px;
+}
+
+.valor-disponivel {
+font-size: 32px;
+font-weight: 700;
+padding-left: 25px;
+}
+
+.categoria {
+margin-bottom: 48px;
+}
+
+.titulo-secao {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 17px;
+}
+
+.titulo-secao > div {
+display: flex;
+align-items: center;
+gap: 13px;
+}
+
+.titulo-secao h2 {
+font-family: "Playfair Display", serif;
+font-size: 24px;
+}
+
+.titulo-secao p {
+color: var(--texto-claro);
+font-size: 13px;
+margin-top: 2px;
+}
+
+.icone {
+width: 45px;
+height: 45px;
+
+display: flex;
+justify-content: center;
+align-items: center;
+
+background: var(--rosa-claro);
+border-radius: 14px;
+
+font-size: 21px;
+
+}
+
+.btn-adicionar {
+border: 1px solid var(--borda);
+background: white;
+
+padding: 9px 15px;
+
+border-radius: 10px;
+
+cursor: pointer;
+
+color: var(--texto);
+font-family: inherit;
+
+transition: .2s;
+
+}
+
+.btn-adicionar:hover {
+background: var(--azul-claro);
+}
+
+.cards-gastos {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 17px;
+}
+
+.gasto-card {
+transition: .2s;
+}
+
+.gasto-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(70,60,80,.08);
+}
+
+.gasto-card.simples {
+max-width: calc(50% - 8px);
+}
+
+.gasto-topo {
+display: flex;
+justify-content: space-between;
+align-items: center;
+
+margin-bottom: 17px;
+
+font-size: 20px;
+
+}
+
+.gasto-card h3 {
+font-size: 16px;
+margin-bottom: 7px;
+}
+
+.gasto-card strong {
+font-size: 23px;
+}
+
+.gasto-card p {
+color: var(--texto-claro);
+font-size: 13px;
+margin-top: 8px;
+}
+
+.tag {
+padding: 5px 9px;
+border-radius: 20px;
+
+font-size: 10px;
+font-weight: 600;
+
+}
+
+.fixa {
+background: #e5edf5;
+color: #627f9d;
+}
+
+.variavel {
+background: #f4e8df;
+color: #9a775f;
+}
+
+.profissional {
+background: #e9e5f4;
+color: #71699b;
+}
+
+.pessoal {
+background: #f3e4ed;
+color: #966d86;
+}
+
+/* LANÇAMENTOS */
+
+.lista-lancamentos {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.lancamento {
+background: white;
+border: 1px solid var(--borda);
+border-radius: 14px;
+
+padding: 15px 18px;
+
+display: flex;
+justify-content: space-between;
+align-items: center;
+
+}
+
+.lancamento-info {
+display: flex;
+align-items: center;
+gap: 13px;
+}
+
+.lancamento-icone {
+width: 40px;
+height: 40px;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+background: var(--rosa-claro);
+border-radius: 12px;
+
+}
+
+.lancamento-nome {
+font-weight: 600;
+}
+
+.lancamento-data {
+color: var(--texto-claro);
+font-size: 12px;
+margin-top: 3px;
+}
+
+.lancamento-direita {
+display: flex;
+align-items: center;
+gap: 15px;
+}
+
+.lancamento-valor {
+font-weight: 700;
+}
+
+.btn-excluir {
+border: none;
+background: transparent;
+cursor: pointer;
+font-size: 17px;
+opacity: .6;
+}
+
+.btn-excluir:hover {
+opacity: 1;
+}
+
+.vazio {
+text-align: center;
+color: var(--texto-claro);
+padding: 25px;
+}
+
+/* METAS */
+
+.meta-card {
+max-width: 100%;
+}
+
+.meta-info {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.meta-info h3 {
+font-size: 17px;
+}
+
+.meta-info p {
+color: var(--texto-claro);
+font-size: 13px;
+margin-top: 5px;
+}
+
+.meta-info strong {
+font-size: 20px;
+}
+
+.barra {
+height: 8px;
+
+background: #eeeaf0;
+
+border-radius: 10px;
+
+margin: 20px 0 8px;
+
+overflow: hidden;
+
+}
+
+.progresso {
+height: 100%;
+width: 0%;
+
+background: linear-gradient(
+    90deg,
+    var(--azul),
+    var(--lilas)
+);
+
+border-radius: 10px;
+
+}
+
+/* MODAL */
+
+.modal {
+position: fixed;
+
+inset: 0;
+
+background: rgba(40,40,50,.45);
+
+display: none;
+
+align-items: center;
+justify-content: center;
+
+padding: 20px;
+
+z-index: 1000;
+
+}
+
+.modal.aberto {
+display: flex;
+}
+
+.modal-conteudo {
+background: white;
+
+width: 100%;
+max-width: 460px;
+
+max-height: 90vh;
+overflow-y: auto;
+
+border-radius: 22px;
+
+padding: 30px;
+
+position: relative;
+
+box-shadow: 0 20px 60px rgba(0,0,0,.18);
+
+}
+
+.modal-conteudo h2 {
+font-family: "Playfair Display", serif;
+font-size: 28px;
+margin: 5px 0 24px;
+}
+
+.fechar {
+position: absolute;
+
+right: 20px;
+top: 18px;
+
+width: 34px;
+height: 34px;
+
+border: none;
+border-radius: 50%;
+
+background: #f3f1f3;
+
+font-size: 22px;
+
+cursor: pointer;
+
+}
+
+form {
+display: flex;
+flex-direction: column;
+gap: 17px;
+}
+
+label {
+display: flex;
+flex-direction: column;
+
+gap: 7px;
+
+font-size: 13px;
+font-weight: 600;
+
+}
+
+input,
+select {
+width: 100%;
+
+border: 1px solid var(--borda);
+
+background: #faf9fa;
+
+border-radius: 11px;
+
+padding: 12px 13px;
+
+font-family: inherit;
+font-size: 14px;
+
+color: var(--texto);
+
+outline: none;
+
+}
+
+input:focus,
+select:focus {
+border-color: var(--azul);
+background: white;
+}
+
+.btn-confirmar {
+border: none;
+
+background: linear-gradient(
+    135deg,
+    var(--azul),
+    var(--lilas)
+);
+
+color: white;
+
+padding: 13px;
+
+border-radius: 12px;
+
+font-family: inherit;
+font-weight: 700;
+
+cursor: pointer;
+
+margin-top: 5px;
+
+}
+
+.btn-confirmar:hover {
+opacity: .9;
+}
+
+/* FOOTER */
+
+footer {
+text-align: center;
+
+padding: 30px;
+
+color: #999;
+
+font-size: 13px;
+
+}
+
+/* RESPONSIVO */
+
+@media (max-width: 800px) {
+
+.topo {
+    padding: 30px 6%;
+}
+
+.topo h1 {
+    font-size: 29px;
+}
+
+.container {
+    width: 90%;
+}
+
+.resumo {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.cards-gastos {
+    grid-template-columns: 1fr;
+}
+
+.gasto-card.simples {
+    max-width: 100%;
+}
+
+.saldo-mes {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.valor-disponivel {
+    padding-left: 0;
+}
+
+.titulo-secao {
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.btn-adicionar {
+    white-space: nowrap;
+}
+
+.lancamento {
+    align-items: flex-start;
+}
+
+.lancamento-direita {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+}
+
+@media (max-width: 500px) {
+
+.resumo {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.card {
+    padding: 17px;
+}
+
+.resumo-card strong {
+    font-size: 20px;
+}
+
+.resumo-card span {
+    font-size: 12px;
+}
+
+.titulo-secao h2 {
+    font-size: 20px;
+}
+
+.titulo-secao p {
+    font-size: 11px;
+}
+
+.modal-conteudo {
+    padding: 25px 20px;
+}
+
+}
