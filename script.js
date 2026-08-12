@@ -1,11 +1,27 @@
 /* =========================================
 NOSSA VIDA FINANCEIRA
-VERSÃO 4
-COM STATUS DE PAGAMENTO
+SCRIPT.JS
+
+Recursos:
+
+- Receitas
+- Gastos da casa
+- Gastos Luiza
+- Gastos Daniel
+- Gastos do carro
+- Cartões
+- Metas
+- Parcelamentos
+- Lista de gastos
+- Status pago / pendente
+- Filtros
+- Saldo considerando apenas gastos pagos
+- Salvamento automático no navegador
+
 ========================================= */
 
 /* =========================================
-DADOS
+BANCO DE DADOS
 ========================================= */
 
 let dados;
@@ -21,6 +37,8 @@ dados = JSON.parse(
 dados = null;
 
 }
+
+/* Caso não exista nenhum dado */
 
 if (!dados) {
 
@@ -38,7 +56,7 @@ dados = {
 
 }
 
-/* Compatibilidade com versões anteriores */
+/* Compatibilidade */
 
 if (!dados.receitas) {
 
@@ -57,13 +75,9 @@ dados.gastos = [];
 }
 
 /*
-IMPORTANTE:
-
-Gastos criados nas versões anteriores
-não tinham o campo "pago".
-
-Portanto, consideramos que eles estão
-pendentes até que você os marque.
+Adiciona "pago" aos gastos
+antigos que ainda não tinham
+essa informação.
 */
 
 dados.gastos.forEach(function(gasto) {
@@ -104,7 +118,7 @@ const formMeta =
 document.getElementById("formMeta");
 
 /* =========================================
-SALVAR
+SALVAR DADOS
 ========================================= */
 
 function salvarDados() {
@@ -133,40 +147,55 @@ return Number(valor || 0).toLocaleString(
 }
 
 /* =========================================
-DATA
+DATA ATUAL
 ========================================= */
 
 function hoje() {
 
-const agora = new Date();
+const agora =
+    new Date();
+
 
 const ano =
     agora.getFullYear();
+
 
 const mes =
     String(
         agora.getMonth() + 1
     ).padStart(2, "0");
 
+
 const dia =
     String(
         agora.getDate()
     ).padStart(2, "0");
 
+
 return `${ano}-${mes}-${dia}`;
 
 }
 
-function adicionarMes(data, quantidade) {
+/* =========================================
+ADICIONAR MESES
+========================================= */
+
+function adicionarMes(
+data,
+quantidade
+) {
 
 const partes =
     data.split("-");
 
+
 const ano =
     Number(partes[0]);
 
+
 const mes =
     Number(partes[1]) - 1;
+
 
 const dia =
     Number(partes[2]);
@@ -198,10 +227,12 @@ const diaFinal =
 const anoFinal =
     novaData.getFullYear();
 
+
 const mesFinal =
     String(
         novaData.getMonth() + 1
     ).padStart(2, "0");
+
 
 const diaFormatado =
     String(
@@ -214,13 +245,14 @@ return `${anoFinal}-${mesFinal}-${diaFormatado}`;
 }
 
 /* =========================================
-FORMATAÇÃO
+FORMATAÇÃO DE DATA
 ========================================= */
 
 function formatarData(data) {
 
 const partes =
     data.split("-");
+
 
 return (
     partes[2] +
@@ -232,19 +264,26 @@ return (
 
 }
 
+/* =========================================
+PROTEÇÃO DE TEXTO
+========================================= */
+
 function textoSeguro(texto) {
 
 const div =
     document.createElement("div");
 
-div.textContent = texto;
+
+div.textContent =
+    texto;
+
 
 return div.innerHTML;
 
 }
 
 /* =========================================
-CATEGORIAS
+NOMES DAS CATEGORIAS
 ========================================= */
 
 const nomesCategorias = {
@@ -279,7 +318,7 @@ const nomesCategorias = {
 };
 
 /* =========================================
-ABRIR GASTO
+ABRIR MODAL DE GASTO
 ========================================= */
 
 function abrirGasto(categoria) {
@@ -288,6 +327,13 @@ const select =
     document.getElementById(
         "subcategoria"
     );
+
+
+if (!select) {
+
+    return;
+
+}
 
 
 select.innerHTML = "";
@@ -300,6 +346,7 @@ if (categoria === "casa") {
         "casa-fixos",
         "Casa — gasto fixo"
     );
+
 
     adicionarOpcao(
         select,
@@ -317,6 +364,7 @@ if (categoria === "luiza") {
         "luiza-clinica",
         "Luiza — clínica"
     );
+
 
     adicionarOpcao(
         select,
@@ -345,6 +393,7 @@ if (categoria === "carro") {
         "carro-fixos",
         "Carro — gasto fixo"
     );
+
 
     adicionarOpcao(
         select,
@@ -385,9 +434,16 @@ formGasto.dataset.categoria =
     categoria;
 
 
-document.getElementById(
-    "data"
-).value = hoje();
+const campoData =
+    document.getElementById("data");
+
+
+if (campoData) {
+
+    campoData.value =
+        hoje();
+
+}
 
 
 document.getElementById(
@@ -400,31 +456,63 @@ document.getElementById(
 ).value = "";
 
 
-document.getElementById(
-    "pagamento"
-).value =
+const pagamento =
+    document.getElementById(
+        "pagamento"
+    );
+
+
+if (
     categoria === "cartao-luiza"
-        ? "cartao-luiza"
-        : categoria === "cartao-daniel"
-            ? "cartao-daniel"
-            : "pix";
+) {
+
+    pagamento.value =
+        "cartao-luiza";
+
+}
+
+else if (
+    categoria === "cartao-daniel"
+) {
+
+    pagamento.value =
+        "cartao-daniel";
+
+}
+
+else {
+
+    pagamento.value =
+        "pix";
+
+}
 
 
 document.getElementById(
     "parcelado"
-).value = "nao";
+).value =
+    "nao";
 
 
 document.getElementById(
     "numeroParcelas"
-).value = 2;
+).value =
+    2;
 
 
-document.getElementById(
-    "campoParcelas"
-).classList.add(
-    "campo-oculto"
-);
+const campoParcelas =
+    document.getElementById(
+        "campoParcelas"
+    );
+
+
+if (campoParcelas) {
+
+    campoParcelas.classList.add(
+        "campo-oculto"
+    );
+
+}
 
 
 atualizarPreviewParcelamento();
@@ -438,15 +526,27 @@ modalGasto.classList.add(
 setTimeout(
     function() {
 
-        document
-            .getElementById("descricao")
-            .focus();
+        const campo =
+            document.getElementById(
+                "descricao"
+            );
+
+
+        if (campo) {
+
+            campo.focus();
+
+        }
 
     },
     100
 );
 
 }
+
+/* =========================================
+ADICIONAR OPÇÃO AO SELECT
+========================================= */
 
 function adicionarOpcao(
 select,
@@ -455,55 +555,95 @@ texto
 ) {
 
 const option =
-    document.createElement("option");
+    document.createElement(
+        "option"
+    );
 
-option.value = valor;
 
-option.textContent = texto;
+option.value =
+    valor;
 
-select.appendChild(option);
+
+option.textContent =
+    texto;
+
+
+select.appendChild(
+    option
+);
 
 }
 
 /* =========================================
-MODAIS
+FECHAR MODAIS
 ========================================= */
 
 function fecharGasto() {
 
-modalGasto.classList.remove(
-    "aberto"
-);
+if (modalGasto) {
+
+    modalGasto.classList.remove(
+        "aberto"
+    );
+
+}
 
 }
 
 function fecharReceitas() {
 
-modalReceitas.classList.remove(
-    "aberto"
+if (modalReceitas) {
+
+    modalReceitas.classList.remove(
+        "aberto"
+    );
+
+}
+
+}
+
+/* =========================================
+BOTÕES DE FECHAR
+========================================= */
+
+const fecharGastoBtn =
+document.getElementById(
+"fecharGasto"
+);
+
+if (fecharGastoBtn) {
+
+fecharGastoBtn.addEventListener(
+    "click",
+    fecharGasto
 );
 
 }
 
-document
-.getElementById("fecharGasto")
-.addEventListener(
-"click",
-fecharGasto
+const fecharReceitasBtn =
+document.getElementById(
+"fecharReceitas"
 );
 
-document
-.getElementById("fecharReceitas")
-.addEventListener(
-"click",
-fecharReceitas
+if (fecharReceitasBtn) {
+
+fecharReceitasBtn.addEventListener(
+    "click",
+    fecharReceitas
 );
 
-document
-.getElementById("fecharLista")
-.addEventListener(
-"click",
-function() {
+}
+
+const fecharListaBtn =
+document.getElementById(
+"fecharLista"
+);
+
+if (fecharListaBtn) {
+
+fecharListaBtn.addEventListener(
+    "click",
+    function() {
 
         modalLista.classList.remove(
             "aberto"
@@ -512,11 +652,18 @@ function() {
     }
 );
 
-document
-.getElementById("fecharMeta")
-.addEventListener(
-"click",
-function() {
+}
+
+const fecharMetaBtn =
+document.getElementById(
+"fecharMeta"
+);
+
+if (fecharMetaBtn) {
+
+fecharMetaBtn.addEventListener(
+    "click",
+    function() {
 
         modalMeta.classList.remove(
             "aberto"
@@ -525,8 +672,10 @@ function() {
     }
 );
 
+}
+
 /* =========================================
-BOTÕES + ADICIONAR
+BOTÕES ADICIONAR
 ========================================= */
 
 document
@@ -549,7 +698,7 @@ function(botao) {
 );
 
 /* =========================================
-CARTÕES
+BOTÕES DOS CARTÕES
 ========================================= */
 
 document
@@ -577,22 +726,46 @@ RECEITAS
 
 function abrirReceitas() {
 
-document.getElementById(
-    "receitaLuiza"
-).value =
-    dados.receitas.luiza || "";
+const campoLuiza =
+    document.getElementById(
+        "receitaLuiza"
+    );
 
 
-document.getElementById(
-    "receitaDaniel"
-).value =
-    dados.receitas.daniel || "";
+const campoDaniel =
+    document.getElementById(
+        "receitaDaniel"
+    );
 
 
-document.getElementById(
-    "outrasReceitas"
-).value =
-    dados.receitas.outras || "";
+const campoOutras =
+    document.getElementById(
+        "outrasReceitas"
+    );
+
+
+if (campoLuiza) {
+
+    campoLuiza.value =
+        dados.receitas.luiza || "";
+
+}
+
+
+if (campoDaniel) {
+
+    campoDaniel.value =
+        dados.receitas.daniel || "";
+
+}
+
+
+if (campoOutras) {
+
+    campoOutras.value =
+        dados.receitas.outras || "";
+
+}
 
 
 modalReceitas.classList.add(
@@ -601,22 +774,34 @@ modalReceitas.classList.add(
 
 }
 
-document
-.getElementById("btnReceitas")
-.addEventListener(
-"click",
-abrirReceitas
+const btnReceitas =
+document.getElementById(
+"btnReceitas"
 );
+
+if (btnReceitas) {
+
+btnReceitas.addEventListener(
+    "click",
+    abrirReceitas
+);
+
+}
 
 /* =========================================
 PARCELAMENTO
 ========================================= */
 
-document
-.getElementById("parcelado")
-.addEventListener(
-"change",
-function() {
+const campoParcelado =
+document.getElementById(
+"parcelado"
+);
+
+if (campoParcelado) {
+
+campoParcelado.addEventListener(
+    "change",
+    function() {
 
         const campo =
             document.getElementById(
@@ -632,7 +817,9 @@ function() {
                 "campo-oculto"
             );
 
-        } else {
+        }
+
+        else {
 
             campo.classList.add(
                 "campo-oculto"
@@ -646,26 +833,46 @@ function() {
     }
 );
 
-document
-.getElementById("numeroParcelas")
-.addEventListener(
-"input",
-atualizarPreviewParcelamento
+}
+
+const campoNumeroParcelas =
+document.getElementById(
+"numeroParcelas"
 );
 
-document
-.getElementById("valor")
-.addEventListener(
-"input",
-atualizarPreviewParcelamento
+if (campoNumeroParcelas) {
+
+campoNumeroParcelas.addEventListener(
+    "input",
+    atualizarPreviewParcelamento
 );
+
+}
+
+const campoValor =
+document.getElementById(
+"valor"
+);
+
+if (campoValor) {
+
+campoValor.addEventListener(
+    "input",
+    atualizarPreviewParcelamento
+);
+
+}
+
+/* =========================================
+PREVIEW DO PARCELAMENTO
+========================================= */
 
 function atualizarPreviewParcelamento() {
 
-const parcelado =
+const campoParcelado =
     document.getElementById(
         "parcelado"
-    ).value;
+    );
 
 
 const preview =
@@ -675,10 +882,22 @@ const preview =
 
 
 if (
-    parcelado !== "sim"
+    !campoParcelado ||
+    !preview
 ) {
 
-    preview.innerHTML = "";
+    return;
+
+}
+
+
+if (
+    campoParcelado.value !==
+    "sim"
+) {
+
+    preview.innerHTML =
+        "";
 
     return;
 
@@ -716,13 +935,15 @@ if (
 
 
 const parcela =
-    valor / quantidade;
+    valor /
+    quantidade;
 
 
 preview.innerHTML = `
 
     <strong>
-        ${quantidade} parcelas de
+        ${quantidade}
+        parcelas de
         ${dinheiro(parcela)}
     </strong>
 
@@ -739,195 +960,92 @@ preview.innerHTML = `
 SALVAR GASTO
 ========================================= */
 
+if (formGasto) {
+
 formGasto.addEventListener(
-"submit",
-function(event) {
+    "submit",
+    function(event) {
 
-    event.preventDefault();
-
-
-    const descricao =
-        document
-            .getElementById("descricao")
-            .value
-            .trim();
+        event.preventDefault();
 
 
-    const valor =
-        Number(
-            document
-                .getElementById("valor")
-                .value
-        );
-
-
-    const data =
-        document
-            .getElementById("data")
-            .value;
-
-
-    const tipo =
-        document
-            .getElementById("tipo")
-            .value;
-
-
-    const pagamento =
-        document
-            .getElementById("pagamento")
-            .value;
-
-
-    const parcelado =
-        document
-            .getElementById("parcelado")
-            .value;
-
-
-    const quantidadeParcelas =
-        Number(
+        const descricao =
             document
                 .getElementById(
-                    "numeroParcelas"
+                    "descricao"
                 )
                 .value
-        );
+                .trim();
 
 
-    const subcategoria =
-        document
-            .getElementById(
-                "subcategoria"
-            )
-            .value;
+        const valor =
+            Number(
+                document
+                    .getElementById(
+                        "valor"
+                    )
+                    .value
+            );
 
 
-    if (
-        !descricao ||
-        valor <= 0 ||
-        !data
-    ) {
-
-        alert(
-            "Preencha a descrição, o valor e a data."
-        );
-
-        return;
-
-    }
+        const data =
+            document
+                .getElementById(
+                    "data"
+                )
+                .value;
 
 
-    let categoria =
-        formGasto.dataset.categoria;
+        const tipo =
+            document
+                .getElementById(
+                    "tipo"
+                )
+                .value;
 
 
-    if (
-        pagamento === "cartao-luiza" &&
-        categoria === "cartao-luiza"
-    ) {
-
-        categoria =
-            "cartao-luiza";
-
-    }
+        const pagamento =
+            document
+                .getElementById(
+                    "pagamento"
+                )
+                .value;
 
 
-    if (
-        pagamento === "cartao-daniel" &&
-        categoria === "cartao-daniel"
-    ) {
-
-        categoria =
-            "cartao-daniel";
-
-    }
+        const parcelado =
+            document
+                .getElementById(
+                    "parcelado"
+                )
+                .value;
 
 
-    /*
-       COMPRA À VISTA
-    */
+        const quantidadeParcelas =
+            Number(
+                document
+                    .getElementById(
+                        "numeroParcelas"
+                    )
+                    .value
+            );
 
-    if (
-        parcelado !== "sim"
-    ) {
 
-        const novoGasto = {
-
-            id: Date.now(),
-
-            descricao: descricao,
-
-            valor: valor,
-
-            valorTotal: valor,
-
-            data: data,
-
-            tipo: tipo,
-
-            pagamento: pagamento,
-
-            categoria: categoria,
-
-            subcategoria: subcategoria,
-
-            parcelado: false,
-
-            parcelaAtual: 1,
-
-            totalParcelas: 1,
-
-            grupoParcela: null,
-
-            pago: false
-
-        };
+        const subcategoria =
+            document
+                .getElementById(
+                    "subcategoria"
+                )
+                .value;
 
 
         if (
-            pagamento === "cartao-luiza" &&
-            categoria !== "cartao-luiza" &&
-            categoria !== "cartao-daniel"
-        ) {
-
-            novoGasto.cartao =
-                "cartao-luiza";
-
-        }
-
-
-        if (
-            pagamento === "cartao-daniel" &&
-            categoria !== "cartao-luiza" &&
-            categoria !== "cartao-daniel"
-        ) {
-
-            novoGasto.cartao =
-                "cartao-daniel";
-
-        }
-
-
-        dados.gastos.push(
-            novoGasto
-        );
-
-    }
-
-
-    /*
-       COMPRA PARCELADA
-    */
-
-    else {
-
-        if (
-            quantidadeParcelas < 2
+            !descricao ||
+            valor <= 0 ||
+            !data
         ) {
 
             alert(
-                "Uma compra parcelada precisa ter pelo menos 2 parcelas."
+                "Preencha a descrição, o valor e a data."
             );
 
             return;
@@ -935,68 +1053,36 @@ function(event) {
         }
 
 
-        const grupo =
-            Date.now();
+        const categoria =
+            formGasto.dataset.categoria;
 
 
-        const valorBase =
-            Math.floor(
-                (
-                    valor /
-                    quantidadeParcelas
-                ) * 100
-            ) / 100;
+        /*
+           =====================================
+           GASTO À VISTA
+           =====================================
+        */
 
-
-        const valorUltima =
-            Math.round(
-                (
-                    valor -
-                    (
-                        valorBase *
-                        (
-                            quantidadeParcelas - 1
-                        )
-                    )
-                ) * 100
-            ) / 100;
-
-
-        for (
-            let i = 0;
-            i < quantidadeParcelas;
-            i++
+        if (
+            parcelado !== "sim"
         ) {
 
-            const valorParcela =
-                i === quantidadeParcelas - 1
-                    ? valorUltima
-                    : valorBase;
-
-
-            const dataParcela =
-                adicionarMes(
-                    data,
-                    i
-                );
-
-
-            const parcela = {
+            const novoGasto = {
 
                 id:
-                    grupo + i,
+                    Date.now(),
 
                 descricao:
                     descricao,
 
                 valor:
-                    valorParcela,
+                    valor,
 
                 valorTotal:
                     valor,
 
                 data:
-                    dataParcela,
+                    data,
 
                 tipo:
                     tipo,
@@ -1011,16 +1097,16 @@ function(event) {
                     subcategoria,
 
                 parcelado:
-                    true,
+                    false,
 
                 parcelaAtual:
-                    i + 1,
+                    1,
 
                 totalParcelas:
-                    quantidadeParcelas,
+                    1,
 
                 grupoParcela:
-                    grupo,
+                    null,
 
                 pago:
                     false
@@ -1029,95 +1115,242 @@ function(event) {
 
 
             if (
-                pagamento === "cartao-luiza" &&
-                categoria !== "cartao-luiza" &&
-                categoria !== "cartao-daniel"
+                pagamento ===
+                "cartao-luiza"
             ) {
 
-                parcela.cartao =
+                novoGasto.cartao =
                     "cartao-luiza";
 
             }
 
 
             if (
-                pagamento === "cartao-daniel" &&
-                categoria !== "cartao-luiza" &&
-                categoria !== "cartao-daniel"
+                pagamento ===
+                "cartao-daniel"
             ) {
 
-                parcela.cartao =
+                novoGasto.cartao =
                     "cartao-daniel";
 
             }
 
 
             dados.gastos.push(
-                parcela
+                novoGasto
             );
 
         }
 
+
+        /*
+           =====================================
+           GASTO PARCELADO
+           =====================================
+        */
+
+        else {
+
+            if (
+                quantidadeParcelas < 2
+            ) {
+
+                alert(
+                    "Uma compra parcelada precisa ter pelo menos 2 parcelas."
+                );
+
+                return;
+
+            }
+
+
+            const grupo =
+                Date.now();
+
+
+            const valorBase =
+                Math.floor(
+                    (
+                        valor /
+                        quantidadeParcelas
+                    ) * 100
+                ) / 100;
+
+
+            const valorUltima =
+                Math.round(
+                    (
+                        valor -
+                        (
+                            valorBase *
+                            (
+                                quantidadeParcelas -
+                                1
+                            )
+                        )
+                    ) * 100
+                ) / 100;
+
+
+            for (
+                let i = 0;
+                i < quantidadeParcelas;
+                i++
+            ) {
+
+                const valorParcela =
+                    i ===
+                    quantidadeParcelas - 1
+                        ? valorUltima
+                        : valorBase;
+
+
+                const dataParcela =
+                    adicionarMes(
+                        data,
+                        i
+                    );
+
+
+                const parcela = {
+
+                    id:
+                        grupo + i,
+
+                    descricao:
+                        descricao,
+
+                    valor:
+                        valorParcela,
+
+                    valorTotal:
+                        valor,
+
+                    data:
+                        dataParcela,
+
+                    tipo:
+                        tipo,
+
+                    pagamento:
+                        pagamento,
+
+                    categoria:
+                        categoria,
+
+                    subcategoria:
+                        subcategoria,
+
+                    parcelado:
+                        true,
+
+                    parcelaAtual:
+                        i + 1,
+
+                    totalParcelas:
+                        quantidadeParcelas,
+
+                    grupoParcela:
+                        grupo,
+
+                    pago:
+                        false
+
+                };
+
+
+                if (
+                    pagamento ===
+                    "cartao-luiza"
+                ) {
+
+                    parcela.cartao =
+                        "cartao-luiza";
+
+                }
+
+
+                if (
+                    pagamento ===
+                    "cartao-daniel"
+                ) {
+
+                    parcela.cartao =
+                        "cartao-daniel";
+
+                }
+
+
+                dados.gastos.push(
+                    parcela
+                );
+
+            }
+
+        }
+
+
+        salvarDados();
+
+        atualizarTudo();
+
+        fecharGasto();
+
     }
-
-
-    salvarDados();
-
-    atualizarTudo();
-
-    fecharGasto();
+);
 
 }
 
-);
-
 /* =========================================
-RECEITAS
+SALVAR RECEITAS
 ========================================= */
 
+if (formReceitas) {
+
 formReceitas.addEventListener(
-"submit",
-function(event) {
+    "submit",
+    function(event) {
 
-    event.preventDefault();
-
-
-    dados.receitas.luiza =
-        Number(
-            document.getElementById(
-                "receitaLuiza"
-            ).value
-        ) || 0;
+        event.preventDefault();
 
 
-    dados.receitas.daniel =
-        Number(
-            document.getElementById(
-                "receitaDaniel"
-            ).value
-        ) || 0;
+        dados.receitas.luiza =
+            Number(
+                document.getElementById(
+                    "receitaLuiza"
+                ).value
+            ) || 0;
 
 
-    dados.receitas.outras =
-        Number(
-            document.getElementById(
-                "outrasReceitas"
-            ).value
-        ) || 0;
+        dados.receitas.daniel =
+            Number(
+                document.getElementById(
+                    "receitaDaniel"
+                ).value
+            ) || 0;
 
 
-    salvarDados();
+        dados.receitas.outras =
+            Number(
+                document.getElementById(
+                    "outrasReceitas"
+                ).value
+            ) || 0;
 
-    atualizarTudo();
 
-    fecharReceitas();
+        salvarDados();
+
+        atualizarTudo();
+
+        fecharReceitas();
+
+    }
+);
 
 }
 
-);
-
 /* =========================================
-GASTOS DO MÊS
+GASTOS DO MÊS ATUAL
 ========================================= */
 
 function gastosDoMes() {
@@ -1125,8 +1358,10 @@ function gastosDoMes() {
 const agora =
     new Date();
 
+
 const mes =
     agora.getMonth();
+
 
 const ano =
     agora.getFullYear();
@@ -1153,7 +1388,7 @@ return dados.gastos.filter(
 }
 
 /* =========================================
-ATUALIZAR TUDO
+ATUALIZAR PAINEL PRINCIPAL
 ========================================= */
 
 function atualizarTudo() {
@@ -1162,28 +1397,70 @@ const gastos =
     gastosDoMes();
 
 
+/*
+   RECEITAS
+*/
+
 const receitas =
     Number(
-        dados.receitas.luiza
+        dados.receitas.luiza || 0
     ) +
 
     Number(
-        dados.receitas.daniel
+        dados.receitas.daniel || 0
     ) +
 
     Number(
-        dados.receitas.outras
+        dados.receitas.outras || 0
     );
 
+
+/*
+   TODOS OS GASTOS DO MÊS
+   Pago + pendente
+*/
 
 const totalGastos =
     somar(gastos);
 
 
+/*
+   SOMENTE O QUE JÁ FOI PAGO
+*/
+
+const totalPago =
+    somar(
+        gastos.filter(
+            gasto =>
+                gasto.pago
+        )
+    );
+
+
+/*
+   O QUE AINDA FALTA PAGAR
+*/
+
+const totalPendente =
+    totalGastos -
+    totalPago;
+
+
+/*
+   SALDO REAL DISPONÍVEL
+
+   Só descontamos aquilo
+   que já foi pago.
+*/
+
 const saldo =
     receitas -
-    totalGastos;
+    totalPago;
 
+
+/*
+   PERCENTUAL DE GASTOS
+*/
 
 let percentual = 0;
 
@@ -1201,36 +1478,84 @@ if (
 }
 
 
-document.getElementById(
-    "totalReceitas"
-).textContent =
-    dinheiro(receitas);
+/*
+   TOPO
+*/
+
+const totalReceitas =
+    document.getElementById(
+        "totalReceitas"
+    );
 
 
-document.getElementById(
-    "totalGastos"
-).textContent =
-    dinheiro(totalGastos);
+const totalGastosElemento =
+    document.getElementById(
+        "totalGastos"
+    );
 
 
-document.getElementById(
-    "saldo"
-).textContent =
-    dinheiro(saldo);
+const saldoElemento =
+    document.getElementById(
+        "saldo"
+    );
 
 
-document.getElementById(
-    "disponivel"
-).textContent =
-    dinheiro(saldo);
+const disponivelElemento =
+    document.getElementById(
+        "disponivel"
+    );
 
 
-document.getElementById(
-    "percentual"
-).textContent =
-    percentual.toFixed(0) +
-    "%";
+const percentualElemento =
+    document.getElementById(
+        "percentual"
+    );
 
+
+if (totalReceitas) {
+
+    totalReceitas.textContent =
+        dinheiro(receitas);
+
+}
+
+
+if (totalGastosElemento) {
+
+    totalGastosElemento.textContent =
+        dinheiro(totalGastos);
+
+}
+
+
+if (saldoElemento) {
+
+    saldoElemento.textContent =
+        dinheiro(saldo);
+
+}
+
+
+if (disponivelElemento) {
+
+    disponivelElemento.textContent =
+        dinheiro(saldo);
+
+}
+
+
+if (percentualElemento) {
+
+    percentualElemento.textContent =
+        percentual.toFixed(0) +
+        "%";
+
+}
+
+
+/*
+   SEÇÕES
+*/
 
 atualizarCasa(gastos);
 
@@ -1255,8 +1580,8 @@ function atualizarCasa(gastos) {
 const fixos =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "casa-fixos"
         )
     );
@@ -1265,23 +1590,39 @@ const fixos =
 const variaveis =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "casa-variaveis"
         )
     );
 
 
-document.getElementById(
-    "casaFixos"
-).textContent =
-    dinheiro(fixos);
+const elementoFixos =
+    document.getElementById(
+        "casaFixos"
+    );
 
 
-document.getElementById(
-    "casaVariaveis"
-).textContent =
-    dinheiro(variaveis);
+const elementoVariaveis =
+    document.getElementById(
+        "casaVariaveis"
+    );
+
+
+if (elementoFixos) {
+
+    elementoFixos.textContent =
+        dinheiro(fixos);
+
+}
+
+
+if (elementoVariaveis) {
+
+    elementoVariaveis.textContent =
+        dinheiro(variaveis);
+
+}
 
 }
 
@@ -1294,8 +1635,8 @@ function atualizarLuiza(gastos) {
 const clinica =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "luiza-clinica"
         )
     );
@@ -1304,23 +1645,39 @@ const clinica =
 const pessoal =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "luiza-pessoal"
         )
     );
 
 
-document.getElementById(
-    "luizaClinica"
-).textContent =
-    dinheiro(clinica);
+const elementoClinica =
+    document.getElementById(
+        "luizaClinica"
+    );
 
 
-document.getElementById(
-    "luizaPessoal"
-).textContent =
-    dinheiro(pessoal);
+const elementoPessoal =
+    document.getElementById(
+        "luizaPessoal"
+    );
+
+
+if (elementoClinica) {
+
+    elementoClinica.textContent =
+        dinheiro(clinica);
+
+}
+
+
+if (elementoPessoal) {
+
+    elementoPessoal.textContent =
+        dinheiro(pessoal);
+
+}
 
 }
 
@@ -1333,17 +1690,25 @@ function atualizarDaniel(gastos) {
 const pessoal =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "daniel-pessoal"
         )
     );
 
 
-document.getElementById(
-    "danielPessoal"
-).textContent =
-    dinheiro(pessoal);
+const elemento =
+    document.getElementById(
+        "danielPessoal"
+    );
+
+
+if (elemento) {
+
+    elemento.textContent =
+        dinheiro(pessoal);
+
+}
 
 }
 
@@ -1356,8 +1721,8 @@ function atualizarCarro(gastos) {
 const fixos =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "carro-fixos"
         )
     );
@@ -1366,23 +1731,39 @@ const fixos =
 const variaveis =
     somar(
         gastos.filter(
-            g =>
-                g.subcategoria ===
+            gasto =>
+                gasto.subcategoria ===
                 "carro-variaveis"
         )
     );
 
 
-document.getElementById(
-    "carroFixos"
-).textContent =
-    dinheiro(fixos);
+const elementoFixos =
+    document.getElementById(
+        "carroFixos"
+    );
 
 
-document.getElementById(
-    "carroVariaveis"
-).textContent =
-    dinheiro(variaveis);
+const elementoVariaveis =
+    document.getElementById(
+        "carroVariaveis"
+    );
+
+
+if (elementoFixos) {
+
+    elementoFixos.textContent =
+        dinheiro(fixos);
+
+}
+
+
+if (elementoVariaveis) {
+
+    elementoVariaveis.textContent =
+        dinheiro(variaveis);
+
+}
 
 }
 
@@ -1408,9 +1789,9 @@ function atualizarCartoes(gastos) {
 const luiza =
     somar(
         gastos.filter(
-            g =>
+            gasto =>
                 gastoPertenceAoCartao(
-                    g,
+                    gasto,
                     "cartao-luiza"
                 )
         )
@@ -1420,25 +1801,41 @@ const luiza =
 const daniel =
     somar(
         gastos.filter(
-            g =>
+            gasto =>
                 gastoPertenceAoCartao(
-                    g,
+                    gasto,
                     "cartao-daniel"
                 )
         )
     );
 
 
-document.getElementById(
-    "cartaoLuiza"
-).textContent =
-    dinheiro(luiza);
+const elementoLuiza =
+    document.getElementById(
+        "cartaoLuiza"
+    );
 
 
-document.getElementById(
-    "cartaoDaniel"
-).textContent =
-    dinheiro(daniel);
+const elementoDaniel =
+    document.getElementById(
+        "cartaoDaniel"
+    );
+
+
+if (elementoLuiza) {
+
+    elementoLuiza.textContent =
+        dinheiro(luiza);
+
+}
+
+
+if (elementoDaniel) {
+
+    elementoDaniel.textContent =
+        dinheiro(daniel);
+
+}
 
 }
 
@@ -1453,7 +1850,7 @@ return lista.reduce(
 
         return (
             total +
-            Number(item.valor)
+            Number(item.valor || 0)
         );
 
     },
@@ -1463,10 +1860,12 @@ return lista.reduce(
 }
 
 /* =========================================
-LANÇAMENTOS DO MÊS
+LANÇAMENTOS
 ========================================= */
 
-function atualizarLancamentos(gastos) {
+function atualizarLancamentos(
+gastos
+) {
 
 const lista =
     document.getElementById(
@@ -1474,14 +1873,26 @@ const lista =
     );
 
 
+if (!lista) {
+
+    return;
+
+}
+
+
 if (
     gastos.length === 0
 ) {
 
-    lista.innerHTML =
-        `<p class="vazio">
+    lista.innerHTML = `
+
+        <p class="vazio">
+
             Nenhum lançamento neste mês.
-        </p>`;
+
+        </p>
+
+    `;
 
     return;
 
@@ -1528,7 +1939,8 @@ ordenados.forEach(
         }
 
 
-        let parcelaTexto = "";
+        let parcelaTexto =
+            "";
 
 
         if (
@@ -1546,18 +1958,33 @@ ordenados.forEach(
             <div class="lancamento-info">
 
                 <div class="lancamento-icone">
-                    ${icone(gasto.categoria)}
+
+                    ${icone(
+                        gasto.categoria
+                    )}
+
                 </div>
+
 
                 <div>
 
                     <div class="lancamento-nome">
-                        ${textoSeguro(gasto.descricao)}
+
+                        ${textoSeguro(
+                            gasto.descricao
+                        )}
+
                     </div>
 
+
                     <div class="lancamento-data">
-                        ${formatarData(gasto.data)}
+
+                        ${formatarData(
+                            gasto.data
+                        )}
+
                         ${parcelaTexto}
+
                     </div>
 
                 </div>
@@ -1568,8 +1995,13 @@ ordenados.forEach(
             <div class="lancamento-direita">
 
                 <span class="lancamento-valor">
-                    ${dinheiro(gasto.valor)}
+
+                    ${dinheiro(
+                        gasto.valor
+                    )}
+
                 </span>
+
 
                 <button
                     class="btn-excluir"
@@ -1583,11 +2015,15 @@ ordenados.forEach(
         `;
 
 
-        item
-            .querySelector(
+        const excluir =
+            item.querySelector(
                 ".btn-excluir"
-            )
-            .addEventListener(
+            );
+
+
+        if (excluir) {
+
+            excluir.addEventListener(
                 "click",
                 function() {
 
@@ -1598,8 +2034,12 @@ ordenados.forEach(
                 }
             );
 
+        }
 
-        lista.appendChild(item);
+
+        lista.appendChild(
+            item
+        );
 
     }
 );
@@ -1607,20 +2047,22 @@ ordenados.forEach(
 }
 
 /* =========================================
-EXCLUIR
+EXCLUIR GASTO
 ========================================= */
 
 function excluirGasto(id) {
 
 const gasto =
     dados.gastos.find(
-        g =>
-            g.id === id
+        item =>
+            item.id === id
     );
 
 
 if (!gasto) {
+
     return;
+
 }
 
 
@@ -1640,11 +2082,15 @@ if (
 
 
 const confirmar =
-    confirm(mensagem);
+    confirm(
+        mensagem
+    );
 
 
 if (!confirmar) {
+
     return;
+
 }
 
 
@@ -1655,17 +2101,19 @@ if (
 
     dados.gastos =
         dados.gastos.filter(
-            g =>
-                g.grupoParcela !==
+            item =>
+                item.grupoParcela !==
                 gasto.grupoParcela
         );
 
-} else {
+}
+
+else {
 
     dados.gastos =
         dados.gastos.filter(
-            g =>
-                g.id !== id
+            item =>
+                item.id !== id
         );
 
 }
@@ -1678,12 +2126,14 @@ atualizarTudo();
 }
 
 /* =========================================
-LISTAS INDIVIDUAIS
+ABRIR LISTA DE GASTOS
 ========================================= */
 
-function abrirLista(categoria) {
+function abrirLista(
+categoria
+) {
 
-const gastos =
+const todosGastos =
     gastosDoMes().filter(
         function(gasto) {
 
@@ -1722,11 +2172,19 @@ const gastos =
     );
 
 
-document.getElementById(
-    "tituloLista"
-).textContent =
-    nomesCategorias[categoria] ||
-    "Lista de gastos";
+const titulo =
+    document.getElementById(
+        "tituloLista"
+    );
+
+
+if (titulo) {
+
+    titulo.textContent =
+        nomesCategorias[categoria] ||
+        "Lista de gastos";
+
+}
 
 
 const conteudo =
@@ -1735,17 +2193,31 @@ const conteudo =
     );
 
 
+if (!conteudo) {
+
+    return;
+
+}
+
+
 conteudo.innerHTML = "";
 
 
+/*
+   =====================================
+   RESUMO
+=====================================
+*/
+
 const total =
-    somar(gastos);
+    somar(todosGastos);
 
 
 const pagos =
     somar(
-        gastos.filter(
-            g => g.pago
+        todosGastos.filter(
+            gasto =>
+                gasto.pago
         )
     );
 
@@ -1755,10 +2227,6 @@ const pendentes =
     pagos;
 
 
-/*
-   RESUMO DA LISTA
-*/
-
 const resumo =
     document.createElement(
         "div"
@@ -1766,12 +2234,12 @@ const resumo =
 
 
 resumo.className =
-    "total-lista";
+    "resumo-lista";
 
 
 resumo.innerHTML = `
 
-    <div>
+    <div class="resumo-card">
 
         <span>
             Total
@@ -1783,7 +2251,8 @@ resumo.innerHTML = `
 
     </div>
 
-    <div>
+
+    <div class="resumo-card">
 
         <span>
             Pago
@@ -1795,7 +2264,8 @@ resumo.innerHTML = `
 
     </div>
 
-    <div>
+
+    <div class="resumo-card">
 
         <span>
             Pendente
@@ -1815,40 +2285,121 @@ conteudo.appendChild(
 );
 
 
-if (
-    gastos.length === 0
+/*
+   =====================================
+   FILTROS
+=====================================
+*/
+
+const filtros =
+    document.createElement(
+        "div"
+    );
+
+
+filtros.className =
+    "filtros-gastos";
+
+
+filtros.innerHTML = `
+
+    <button
+        class="filtro-gasto ativo"
+        data-filtro="todos"
+    >
+        Todos
+    </button>
+
+
+    <button
+        class="filtro-gasto"
+        data-filtro="pagos"
+    >
+        ✓ Pagos
+    </button>
+
+
+    <button
+        class="filtro-gasto"
+        data-filtro="pendentes"
+    >
+        ☐ Pendentes
+    </button>
+
+`;
+
+
+conteudo.appendChild(
+    filtros
+);
+
+
+/*
+   =====================================
+   LISTA
+=====================================
+*/
+
+const lista =
+    document.createElement(
+        "div"
+    );
+
+
+lista.className =
+    "lista-itens-gastos";
+
+
+conteudo.appendChild(
+    lista
+);
+
+
+/*
+   =====================================
+   RENDERIZAR
+=====================================
+*/
+
+function renderizarItens(
+    filtro
 ) {
 
-    const vazio =
-        document.createElement(
-            "p"
-        );
+    lista.innerHTML =
+        "";
 
 
-    vazio.className =
-        "vazio";
+    let gastosFiltrados =
+        [...todosGastos];
 
 
-    vazio.textContent =
-        "Nenhum gasto registrado nesta categoria neste mês.";
+    if (
+        filtro === "pagos"
+    ) {
+
+        gastosFiltrados =
+            todosGastos.filter(
+                gasto =>
+                    gasto.pago
+            );
+
+    }
 
 
-    conteudo.appendChild(
-        vazio
-    );
+    if (
+        filtro === "pendentes"
+    ) {
+
+        gastosFiltrados =
+            todosGastos.filter(
+                gasto =>
+                    !gasto.pago
+            );
+
+    }
 
 
-    modalLista.classList.add(
-        "aberto"
-    );
-
-    return;
-
-}
-
-
-const ordenados =
-    [...gastos].sort(
+    gastosFiltrados.sort(
         function(a, b) {
 
             return (
@@ -1860,134 +2411,257 @@ const ordenados =
     );
 
 
-ordenados.forEach(
-    function(gasto) {
+    if (
+        gastosFiltrados.length === 0
+    ) {
 
-        const item =
-            document.createElement(
-                "div"
-            );
+        lista.innerHTML = `
 
+            <div class="lista-vazia">
 
-        item.className =
-            "item-lista";
+                <div>
 
-
-        if (
-            gasto.pago
-        ) {
-
-            item.classList.add(
-                "item-pago"
-            );
-
-        }
-
-
-        let parcelaTexto =
-            "";
-
-
-        if (
-            gasto.parcelado
-        ) {
-
-            parcelaTexto =
-                ` • Parcela ${gasto.parcelaAtual}/${gasto.totalParcelas}`;
-
-        }
-
-
-        let pagamentoTexto =
-            "";
-
-
-        if (
-            gasto.pagamento ===
-            "cartao-luiza"
-        ) {
-
-            pagamentoTexto =
-                " • Cartão Luiza";
-
-        }
-
-
-        if (
-            gasto.pagamento ===
-            "cartao-daniel"
-        ) {
-
-            pagamentoTexto =
-                " • Cartão Daniel";
-
-        }
-
-
-        item.innerHTML = `
-
-            <div class="item-lista-info">
-
-                <div class="item-lista-nome">
-                    ${textoSeguro(gasto.descricao)}
-                </div>
-
-                <div class="item-lista-detalhes">
-
-                    ${formatarData(gasto.data)}
-                    ${parcelaTexto}
-                    ${pagamentoTexto}
+                    ${
+                        filtro === "pagos"
+                            ? "✓"
+                            : "☐"
+                    }
 
                 </div>
 
+
+                <p>
+
+                    ${
+                        filtro === "pagos"
+
+                            ? "Nenhum gasto pago ainda."
+
+                            : filtro === "pendentes"
+
+                                ? "Nenhum gasto pendente. 🎉"
+
+                                : "Nenhum gasto registrado."
+
+                    }
+
+                </p>
+
             </div>
-
-
-            <div class="item-lista-valor">
-                ${dinheiro(gasto.valor)}
-            </div>
-
-
-            <button
-                class="btn-status-pagamento
-                ${gasto.pago ? "pago" : ""}"
-                data-id="${gasto.id}"
-            >
-
-                ${gasto.pago
-                    ? "✓ Pago"
-                    : "☐ Pendente"}
-
-            </button>
 
         `;
 
+        return;
 
-        const botaoStatus =
-            item.querySelector(
-                ".btn-status-pagamento"
-            );
+    }
 
 
-        botaoStatus.addEventListener(
-            "click",
-            function() {
+    gastosFiltrados.forEach(
+        function(gasto) {
 
-                alternarPagamento(
-                    gasto.id,
-                    categoria
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "item-lista";
+
+
+            if (
+                gasto.pago
+            ) {
+
+                item.classList.add(
+                    "item-pago"
                 );
 
             }
-        );
 
 
-        conteudo.appendChild(
-            item
-        );
+            let parcelaTexto =
+                "";
 
-    }
+
+            if (
+                gasto.parcelado
+            ) {
+
+                parcelaTexto =
+                    ` • Parcela ${gasto.parcelaAtual}/${gasto.totalParcelas}`;
+
+            }
+
+
+            let pagamentoTexto =
+                "";
+
+
+            if (
+                gasto.pagamento ===
+                "cartao-luiza"
+            ) {
+
+                pagamentoTexto =
+                    " • Cartão Luiza";
+
+            }
+
+
+            if (
+                gasto.pagamento ===
+                "cartao-daniel"
+            ) {
+
+                pagamentoTexto =
+                    " • Cartão Daniel";
+
+            }
+
+
+            item.innerHTML = `
+
+                <div class="item-lista-info">
+
+                    <div class="item-lista-nome">
+
+                        ${textoSeguro(
+                            gasto.descricao
+                        )}
+
+                    </div>
+
+
+                    <div class="item-lista-detalhes">
+
+                        ${formatarData(
+                            gasto.data
+                        )}
+
+                        ${parcelaTexto}
+
+                        ${pagamentoTexto}
+
+                    </div>
+
+                </div>
+
+
+                <div class="item-lista-valor">
+
+                    ${dinheiro(
+                        gasto.valor
+                    )}
+
+                </div>
+
+
+                <button
+                    class="btn-status-pagamento
+                    ${gasto.pago ? "pago" : ""}"
+                    data-id="${gasto.id}"
+                >
+
+                    ${
+                        gasto.pago
+                            ? "✓ Pago"
+                            : "☐ Pendente"
+                    }
+
+                </button>
+
+            `;
+
+
+            const botaoStatus =
+                item.querySelector(
+                    ".btn-status-pagamento"
+                );
+
+
+            if (botaoStatus) {
+
+                botaoStatus.addEventListener(
+                    "click",
+                    function() {
+
+                        alternarPagamento(
+                            gasto.id,
+                            categoria
+                        );
+
+                    }
+                );
+
+            }
+
+
+            lista.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+/*
+   Começa mostrando todos
+*/
+
+renderizarItens(
+    "todos"
 );
+
+
+/*
+   =====================================
+   FUNCIONAMENTO DOS FILTROS
+=====================================
+*/
+
+filtros
+    .querySelectorAll(
+        ".filtro-gasto"
+    )
+    .forEach(
+        function(botao) {
+
+            botao.addEventListener(
+                "click",
+                function() {
+
+                    filtros
+                        .querySelectorAll(
+                            ".filtro-gasto"
+                        )
+                        .forEach(
+                            function(btn) {
+
+                                btn.classList.remove(
+                                    "ativo"
+                                );
+
+                            }
+                        );
+
+
+                    botao.classList.add(
+                        "ativo"
+                    );
+
+
+                    renderizarItens(
+                        botao.dataset.filtro
+                    );
+
+                }
+            );
+
+        }
+    );
 
 
 modalLista.classList.add(
@@ -1997,7 +2671,7 @@ modalLista.classList.add(
 }
 
 /* =========================================
-ALTERAR STATUS DE PAGAMENTO
+ALTERNAR PAGO / PENDENTE
 ========================================= */
 
 function alternarPagamento(
@@ -2016,35 +2690,53 @@ const gasto =
 
 
 if (!gasto) {
+
     return;
+
 }
 
+
+/*
+   Pendente → Pago
+   Pago → Pendente
+*/
 
 gasto.pago =
     !gasto.pago;
 
 
+/*
+   Salva
+*/
+
 salvarDados();
+
+
+/*
+   Atualiza o saldo imediatamente
+*/
 
 atualizarTudo();
 
 
 /*
-   Reabre a lista atualizada
-   para que o botão mude
-   imediatamente.
+   Atualiza a lista imediatamente
 */
 
-abrirLista(categoria);
+abrirLista(
+    categoria
+);
 
 }
 
 /* =========================================
-BOTÕES DE LISTA
+BOTÕES "LISTA DE GASTOS"
 ========================================= */
 
 document
-.querySelectorAll(".btn-lista")
+.querySelectorAll(
+".btn-lista"
+)
 .forEach(
 function(botao) {
 
@@ -2076,6 +2768,10 @@ localStorage.getItem(
 const metaReserva =
 20000;
 
+/* =========================================
+ATUALIZAR META
+========================================= */
+
 function atualizarMeta() {
 
 const porcentagem =
@@ -2088,37 +2784,79 @@ const porcentagem =
     );
 
 
-document.getElementById(
-    "valorMeta"
-).textContent =
-    dinheiro(valorReserva);
+const valorElemento =
+    document.getElementById(
+        "valorMeta"
+    );
 
 
-document.getElementById(
-    "progressoMeta"
-).style.width =
-    porcentagem + "%";
+const progressoElemento =
+    document.getElementById(
+        "progressoMeta"
+    );
 
 
-document.getElementById(
-    "percentualMeta"
-).textContent =
-    porcentagem.toFixed(0) +
-    "% concluído";
+const percentualElemento =
+    document.getElementById(
+        "percentualMeta"
+    );
+
+
+if (valorElemento) {
+
+    valorElemento.textContent =
+        dinheiro(
+            valorReserva
+        );
 
 }
 
-document
-.getElementById(
-"btnAdicionarMeta"
-)
-.addEventListener(
-"click",
-function() {
 
-        document.getElementById(
-            "valorMetaInput"
-        ).value = "";
+if (progressoElemento) {
+
+    progressoElemento.style.width =
+        porcentagem + "%";
+
+}
+
+
+if (percentualElemento) {
+
+    percentualElemento.textContent =
+        porcentagem.toFixed(0) +
+        "% concluído";
+
+}
+
+}
+
+/* =========================================
+ADICIONAR À META
+========================================= */
+
+const btnAdicionarMeta =
+document.getElementById(
+"btnAdicionarMeta"
+);
+
+if (btnAdicionarMeta) {
+
+btnAdicionarMeta.addEventListener(
+    "click",
+    function() {
+
+        const campo =
+            document.getElementById(
+                "valorMetaInput"
+            );
+
+
+        if (campo) {
+
+            campo.value =
+                "";
+
+        }
 
 
         modalMeta.classList.add(
@@ -2128,54 +2866,64 @@ function() {
     }
 );
 
-formMeta.addEventListener(
-"submit",
-function(event) {
-
-    event.preventDefault();
-
-
-    const valor =
-        Number(
-            document.getElementById(
-                "valorMetaInput"
-            ).value
-        );
-
-
-    if (
-        !valor ||
-        valor <= 0
-    ) {
-
-        alert(
-            "Digite um valor válido."
-        );
-
-        return;
-
-    }
-
-
-    valorReserva += valor;
-
-
-    localStorage.setItem(
-        "valorReservaEmergencia",
-        valorReserva
-    );
-
-
-    atualizarMeta();
-
-
-    modalMeta.classList.remove(
-        "aberto"
-    );
-
 }
 
+/* =========================================
+SALVAR META
+========================================= */
+
+if (formMeta) {
+
+formMeta.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        const valor =
+            Number(
+                document.getElementById(
+                    "valorMetaInput"
+                ).value
+            );
+
+
+        if (
+            !valor ||
+            valor <= 0
+        ) {
+
+            alert(
+                "Digite um valor válido."
+            );
+
+            return;
+
+        }
+
+
+        valorReserva +=
+            valor;
+
+
+        localStorage.setItem(
+            "valorReservaEmergencia",
+            valorReserva
+        );
+
+
+        atualizarMeta();
+
+
+        modalMeta.classList.remove(
+            "aberto"
+        );
+
+    }
 );
+
+}
 
 /* =========================================
 ÍCONES
@@ -2186,50 +2934,81 @@ function icone(categoria) {
 if (
     categoria === "casa"
 ) {
+
     return "🏠";
+
 }
+
 
 if (
     categoria === "luiza"
 ) {
+
     return "👩🏻";
+
 }
+
 
 if (
     categoria === "daniel"
 ) {
+
     return "👨🏻";
+
 }
+
 
 if (
     categoria === "carro"
 ) {
+
     return "🚗";
+
 }
+
 
 if (
     categoria ===
     "cartao-luiza"
 ) {
+
     return "💳";
+
 }
+
 
 if (
     categoria ===
     "cartao-daniel"
 ) {
+
     return "💳";
+
 }
+
 
 return "💸";
 
 }
 
 /* =========================================
-MÊS
+MÊS ATUAL
 ========================================= */
 
 function mostrarMes() {
+
+const elemento =
+    document.getElementById(
+        "mesAtual"
+    );
+
+
+if (!elemento) {
+
+    return;
+
+}
+
 
 const agora =
     new Date();
@@ -2250,19 +3029,19 @@ texto =
     texto.slice(1);
 
 
-document.getElementById(
-    "mesAtual"
-).textContent =
+elemento.textContent =
     texto;
 
 }
 
 /* =========================================
-FECHAR MODAIS CLICANDO FORA
+FECHAR MODAIS AO CLICAR FORA
 ========================================= */
 
 document
-.querySelectorAll(".modal")
+.querySelectorAll(
+".modal"
+)
 .forEach(
 function(modal) {
 
@@ -2271,7 +3050,8 @@ function(modal) {
             function(event) {
 
                 if (
-                    event.target === modal
+                    event.target ===
+                    modal
                 ) {
 
                     modal.classList.remove(
@@ -2287,7 +3067,7 @@ function(modal) {
 );
 
 /* =========================================
-INICIAR
+INICIALIZAÇÃO
 ========================================= */
 
 salvarDados();
