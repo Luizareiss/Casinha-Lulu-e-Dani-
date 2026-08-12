@@ -215,6 +215,11 @@ transition: .2s;
 background: var(--azul-claro);
 }
 
+.btn-adicionar.pequeno {
+padding: 8px 11px;
+font-size: 12px;
+}
+
 .cards-gastos {
 display: grid;
 grid-template-columns: repeat(2, 1fr);
@@ -282,6 +287,41 @@ color: #71699b;
 .pessoal {
 background: #f3e4ed;
 color: #966d86;
+}
+
+.acoes-card {
+display: flex;
+gap: 8px;
+margin-top: 15px;
+flex-wrap: wrap;
+}
+
+.btn-lista {
+border: 1px solid var(--borda);
+background: #faf9fa;
+
+color: var(--texto-claro);
+
+padding: 8px 11px;
+
+border-radius: 9px;
+
+font-family: inherit;
+font-size: 12px;
+
+cursor: pointer;
+
+transition: .2s;
+
+}
+
+.btn-lista:hover {
+background: var(--rosa-claro);
+color: var(--texto);
+}
+
+.acoes-meta {
+margin-top: 18px;
 }
 
 /* LANÇAMENTOS */
@@ -539,6 +579,110 @@ cursor: pointer;
 margin-top: 5px;
 
 }
+
+/* PARCELAMENTO */
+
+.campo-oculto {
+display: none;
+}
+
+.preview-parcelamento {
+margin-top: 9px;
+
+padding: 12px;
+
+border-radius: 10px;
+
+background: var(--rosa-claro);
+
+color: var(--texto);
+
+font-size: 12px;
+
+line-height: 1.5;
+
+}
+
+/* LISTA */
+
+.lista-modal {
+max-width: 600px;
+}
+
+.conteudo-lista {
+display: flex;
+flex-direction: column;
+gap: 10px;
+
+max-height: 55vh;
+overflow-y: auto;
+
+}
+
+.item-lista {
+background: #faf9fa;
+
+border: 1px solid var(--borda);
+
+border-radius: 13px;
+
+padding: 14px;
+
+display: flex;
+justify-content: space-between;
+align-items: center;
+
+gap: 15px;
+
+}
+
+.item-lista-info {
+min-width: 0;
+}
+
+.item-lista-nome {
+font-weight: 600;
+font-size: 14px;
+
+word-break: break-word;
+
+}
+
+.item-lista-detalhes {
+color: var(--texto-claro);
+font-size: 11px;
+margin-top: 4px;
+}
+
+.item-lista-valor {
+font-weight: 700;
+white-space: nowrap;
+}
+
+.total-lista {
+background: var(--rosa-claro);
+
+border-radius: 13px;
+
+padding: 15px;
+
+display: flex;
+justify-content: space-between;
+
+margin-bottom: 5px;
+
+}
+
+.total-lista span {
+color: var(--texto-claro);
+font-size: 13px;
+}
+
+.total-lista strong {
+font-size: 17px;
+}
+
+/* RODAPÉ */
 
 footer {
 text-align: center;
