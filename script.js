@@ -16,6 +16,8 @@
    - Filtros
    - Saldo
    - Disponível
+   - Gastos fixos totais
+   - Outros gastos totais
    - Salvamento automático no navegador
 ========================================================= */
 
@@ -580,6 +582,7 @@ const fecharGastoBtn =
         "fecharGasto"
     );
 
+
 if (fecharGastoBtn) {
 
     fecharGastoBtn.addEventListener(
@@ -595,6 +598,7 @@ const fecharReceitasBtn =
         "fecharReceitas"
     );
 
+
 if (fecharReceitasBtn) {
 
     fecharReceitasBtn.addEventListener(
@@ -609,6 +613,7 @@ const fecharListaBtn =
     document.getElementById(
         "fecharLista"
     );
+
 
 if (fecharListaBtn) {
 
@@ -630,6 +635,7 @@ const fecharMetaBtn =
     document.getElementById(
         "fecharMeta"
     );
+
 
 if (fecharMetaBtn) {
 
@@ -1376,10 +1382,133 @@ function gastosDoMes() {
 
 
 /* =========================================================
+   CRIAR CARDS DE FIXOS E OUTROS
+========================================================= */
+
+function criarResumoFixosVariaveis() {
+
+    const resumo =
+        document.querySelector(
+            ".resumo"
+        );
+
+    if (!resumo) {
+        return;
+    }
+
+
+    /* Evita criar os cards novamente */
+
+    if (
+        document.getElementById(
+            "cardGastosFixos"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    const cardFixos =
+        document.createElement(
+            "div"
+        );
+
+    cardFixos.className =
+        "card resumo-card";
+
+    cardFixos.id =
+        "cardGastosFixos";
+
+
+    cardFixos.innerHTML = `
+
+        <span>🔒 Gastos fixos</span>
+
+        <strong id="totalGastosFixos">
+            R$ 0,00
+        </strong>
+
+        <small>Compromissos fixos</small>
+
+    `;
+
+
+    const cardOutros =
+        document.createElement(
+            "div"
+        );
+
+    cardOutros.className =
+        "card resumo-card";
+
+    cardOutros.id =
+        "cardOutrosGastos";
+
+
+    cardOutros.innerHTML = `
+
+        <span>🛒 Outros gastos</span>
+
+        <strong id="totalOutrosGastos">
+            R$ 0,00
+        </strong>
+
+        <small>Gastos variáveis</small>
+
+    `;
+
+
+    const cardPercentual =
+        document.getElementById(
+            "percentual"
+        );
+
+
+    const elementoPercentual =
+        cardPercentual
+            ? cardPercentual.closest(".card")
+            : null;
+
+
+    if (elementoPercentual) {
+
+        resumo.insertBefore(
+            cardFixos,
+            elementoPercentual
+        );
+
+        resumo.insertBefore(
+            cardOutros,
+            elementoPercentual
+        );
+
+    }
+
+    else {
+
+        resumo.appendChild(
+            cardFixos
+        );
+
+        resumo.appendChild(
+            cardOutros
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    ATUALIZAR PAINEL PRINCIPAL
 ========================================================= */
 
 function atualizarTudo() {
+
+    criarResumoFixosVariaveis();
+
 
     const gastos =
         gastosDoMes();
@@ -1409,8 +1538,6 @@ function atualizarTudo() {
 
     /* =====================================================
        TODOS OS GASTOS DO MÊS
-
-       Pago + pendente
     ===================================================== */
 
     const totalGastos =
@@ -1440,41 +1567,62 @@ function atualizarTudo() {
 
 
     /* =====================================================
-       SALDO DO MÊS
+       GASTOS FIXOS
+    ===================================================== */
 
-       Aqui entram TODOS os gastos.
+    const totalGastosFixos =
+        somar(
+            gastos.filter(
+                gasto =>
+                    gasto.tipo === "fixo"
+            )
+        );
+
+
+    /* =====================================================
+       OUTROS GASTOS
+       Tudo que não for fixo
+    ===================================================== */
+
+    const totalOutrosGastos =
+        somar(
+            gastos.filter(
+                gasto =>
+                    gasto.tipo !== "fixo"
+            )
+        );
+
+
+    /* =====================================================
+       SALDO
+
+       Agora o saldo considera somente aquilo
+       que já foi efetivamente pago.
 
        Exemplo:
 
-       Receitas:       R$ 10.000
-       Gastos totais:  R$ 4.000
+       Receita: R$ 10.000
+       Pago:    R$ 1.500
 
-       Saldo:
-       R$ 6.000
+       Saldo:   R$ 8.500
 
-       Marcar um gasto como pago NÃO altera
-       o saldo final do mês, porque aquele gasto
-       já estava contabilizado.
+       Quando um gasto pendente de R$ 500
+       for marcado como pago:
+
+       Saldo:   R$ 8.000
     ===================================================== */
 
     const saldo =
         receitas -
-        totalGastos;
+        totalPago;
 
 
     /* =====================================================
-       DISPONÍVEL AGORA
+       DISPONÍVEL
 
-       Aqui entram somente os gastos que
-       efetivamente já foram pagos.
-
-       Exemplo:
-
-       Receitas:     R$ 10.000
-       Pagos:        R$ 1.500
-
-       Disponível:
-       R$ 8.500
+       Mantemos o mesmo cálculo do saldo,
+       pois representa o dinheiro disponível
+       neste momento.
     ===================================================== */
 
     const disponivel =
@@ -1484,6 +1632,9 @@ function atualizarTudo() {
 
     /* =====================================================
        PERCENTUAL DE GASTOS
+
+       Aqui usamos o total de gastos do mês,
+       incluindo pagos + pendentes.
     ===================================================== */
 
     let percentual = 0;
@@ -1536,6 +1687,18 @@ function atualizarTudo() {
         );
 
 
+    const totalFixosElemento =
+        document.getElementById(
+            "totalGastosFixos"
+        );
+
+
+    const totalOutrosElemento =
+        document.getElementById(
+            "totalOutrosGastos"
+        );
+
+
     if (totalReceitas) {
 
         totalReceitas.textContent =
@@ -1573,6 +1736,26 @@ function atualizarTudo() {
         percentualElemento.textContent =
             percentual.toFixed(0) +
             "%";
+
+    }
+
+
+    if (totalFixosElemento) {
+
+        totalFixosElemento.textContent =
+            dinheiro(
+                totalGastosFixos
+            );
+
+    }
+
+
+    if (totalOutrosElemento) {
+
+        totalOutrosElemento.textContent =
+            dinheiro(
+                totalOutrosGastos
+            );
 
     }
 
@@ -2048,7 +2231,9 @@ function atualizarLancamentos(
                         class="btn-excluir"
                         data-id="${gasto.id}"
                     >
+
                         🗑️
+
                     </button>
 
                 </div>
@@ -2345,7 +2530,9 @@ function abrirLista(categoria) {
             class="filtro-gasto ativo"
             data-filtro="todos"
         >
+
             Todos
+
         </button>
 
 
@@ -2353,7 +2540,9 @@ function abrirLista(categoria) {
             class="filtro-gasto"
             data-filtro="pagos"
         >
+
             ✓ Pagos
+
         </button>
 
 
@@ -2361,7 +2550,9 @@ function abrirLista(categoria) {
             class="filtro-gasto"
             data-filtro="pendentes"
         >
+
             ☐ Pendentes
+
         </button>
 
     `;
@@ -2734,7 +2925,7 @@ function alternarPagamento(
         !gasto.pago;
 
 
-    /* Salva */
+    /* Salva imediatamente */
 
     salvarDados();
 
@@ -3107,6 +3298,8 @@ document
 salvarDados();
 
 mostrarMes();
+
+criarResumoFixosVariaveis();
 
 atualizarTudo();
 
