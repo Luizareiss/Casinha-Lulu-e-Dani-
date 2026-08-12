@@ -1,6 +1,7 @@
 /* =========================================
 NOSSA VIDA FINANCEIRA
-VERSÃO 3
+VERSÃO 4
+COM STATUS DE PAGAMENTO
 ========================================= */
 
 /* =========================================
@@ -54,6 +55,28 @@ if (!dados.gastos) {
 dados.gastos = [];
 
 }
+
+/*
+IMPORTANTE:
+
+Gastos criados nas versões anteriores
+não tinham o campo "pago".
+
+Portanto, consideramos que eles estão
+pendentes até que você os marque.
+*/
+
+dados.gastos.forEach(function(gasto) {
+
+if (
+    typeof gasto.pago === "undefined"
+) {
+
+    gasto.pago = false;
+
+}
+
+});
 
 /* =========================================
 ELEMENTOS
@@ -156,12 +179,6 @@ const novaData =
         dia
     );
 
-
-/*
-   Corrige datas como 31/02,
-   levando para o último dia
-   possível do mês.
-*/
 
 const ultimoDia =
     new Date(
@@ -337,11 +354,6 @@ if (categoria === "carro") {
 
 }
 
-
-/*
-   Quando o botão vem do cartão,
-   a categoria já é conhecida.
-*/
 
 if (
     categoria === "cartao-luiza"
@@ -806,21 +818,13 @@ function(event) {
     }
 
 
-    /*
-       Se veio de um cartão,
-       usamos automaticamente a
-       categoria do cartão.
-    */
-
     let categoria =
         formGasto.dataset.categoria;
 
 
     if (
         pagamento === "cartao-luiza" &&
-        (
-            categoria === "cartao-luiza"
-        )
+        categoria === "cartao-luiza"
     ) {
 
         categoria =
@@ -831,9 +835,7 @@ function(event) {
 
     if (
         pagamento === "cartao-daniel" &&
-        (
-            categoria === "cartao-daniel"
-        )
+        categoria === "cartao-daniel"
     ) {
 
         categoria =
@@ -843,7 +845,7 @@ function(event) {
 
 
     /*
-       À vista
+       COMPRA À VISTA
     */
 
     if (
@@ -876,17 +878,12 @@ function(event) {
 
             totalParcelas: 1,
 
-            grupoParcela: null
+            grupoParcela: null,
+
+            pago: false
 
         };
 
-
-        /*
-           Se foi escolhido um cartão
-           enquanto estamos dentro de
-           outra categoria, mantemos a
-           categoria original.
-        */
 
         if (
             pagamento === "cartao-luiza" &&
@@ -920,7 +917,7 @@ function(event) {
 
 
     /*
-       Parcelado
+       COMPRA PARCELADA
     */
 
     else {
@@ -1023,7 +1020,10 @@ function(event) {
                     quantidadeParcelas,
 
                 grupoParcela:
-                    grupo
+                    grupo,
+
+                pago:
+                    false
 
             };
 
@@ -1463,7 +1463,7 @@ return lista.reduce(
 }
 
 /* =========================================
-LANÇAMENTOS
+LANÇAMENTOS DO MÊS
 ========================================= */
 
 function atualizarLancamentos(gastos) {
@@ -1515,6 +1515,17 @@ ordenados.forEach(
 
         item.className =
             "lancamento";
+
+
+        if (
+            gasto.pago
+        ) {
+
+            item.classList.add(
+                "gasto-pago"
+            );
+
+        }
 
 
         let parcelaTexto = "";
@@ -1731,29 +1742,76 @@ const total =
     somar(gastos);
 
 
-const totalElemento =
-    document.createElement("div");
+const pagos =
+    somar(
+        gastos.filter(
+            g => g.pago
+        )
+    );
 
 
-totalElemento.className =
+const pendentes =
+    total -
+    pagos;
+
+
+/*
+   RESUMO DA LISTA
+*/
+
+const resumo =
+    document.createElement(
+        "div"
+    );
+
+
+resumo.className =
     "total-lista";
 
 
-totalElemento.innerHTML = `
+resumo.innerHTML = `
 
-    <span>
-        Total no mês
-    </span>
+    <div>
 
-    <strong>
-        ${dinheiro(total)}
-    </strong>
+        <span>
+            Total
+        </span>
+
+        <strong>
+            ${dinheiro(total)}
+        </strong>
+
+    </div>
+
+    <div>
+
+        <span>
+            Pago
+        </span>
+
+        <strong>
+            ${dinheiro(pagos)}
+        </strong>
+
+    </div>
+
+    <div>
+
+        <span>
+            Pendente
+        </span>
+
+        <strong>
+            ${dinheiro(pendentes)}
+        </strong>
+
+    </div>
 
 `;
 
 
 conteudo.appendChild(
-    totalElemento
+    resumo
 );
 
 
@@ -1762,7 +1820,9 @@ if (
 ) {
 
     const vazio =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
 
 
     vazio.className =
@@ -1811,6 +1871,17 @@ ordenados.forEach(
 
         item.className =
             "item-lista";
+
+
+        if (
+            gasto.pago
+        ) {
+
+            item.classList.add(
+                "item-pago"
+            );
+
+        }
 
 
         let parcelaTexto =
@@ -1871,11 +1942,44 @@ ordenados.forEach(
 
             </div>
 
+
             <div class="item-lista-valor">
                 ${dinheiro(gasto.valor)}
             </div>
 
+
+            <button
+                class="btn-status-pagamento
+                ${gasto.pago ? "pago" : ""}"
+                data-id="${gasto.id}"
+            >
+
+                ${gasto.pago
+                    ? "✓ Pago"
+                    : "☐ Pendente"}
+
+            </button>
+
         `;
+
+
+        const botaoStatus =
+            item.querySelector(
+                ".btn-status-pagamento"
+            );
+
+
+        botaoStatus.addEventListener(
+            "click",
+            function() {
+
+                alternarPagamento(
+                    gasto.id,
+                    categoria
+                );
+
+            }
+        );
 
 
         conteudo.appendChild(
@@ -1891,6 +1995,53 @@ modalLista.classList.add(
 );
 
 }
+
+/* =========================================
+ALTERAR STATUS DE PAGAMENTO
+========================================= */
+
+function alternarPagamento(
+id,
+categoria
+) {
+
+const gasto =
+    dados.gastos.find(
+        function(item) {
+
+            return item.id === id;
+
+        }
+    );
+
+
+if (!gasto) {
+    return;
+}
+
+
+gasto.pago =
+    !gasto.pago;
+
+
+salvarDados();
+
+atualizarTudo();
+
+
+/*
+   Reabre a lista atualizada
+   para que o botão mude
+   imediatamente.
+*/
+
+abrirLista(categoria);
+
+}
+
+/* =========================================
+BOTÕES DE LISTA
+========================================= */
 
 document
 .querySelectorAll(".btn-lista")
@@ -2138,6 +2289,8 @@ function(modal) {
 /* =========================================
 INICIAR
 ========================================= */
+
+salvarDados();
 
 mostrarMes();
 
