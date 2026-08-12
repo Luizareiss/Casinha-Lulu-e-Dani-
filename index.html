@@ -3,7 +3,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Nossa Vida Financeira</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="./style.css">
 
 </head><body><header class="topo"><div>
     <p class="mini-titulo">NOSSA CASA</p>
@@ -82,10 +82,7 @@
             </div>
         </div>
 
-        <button
-            class="btn-adicionar"
-            data-categoria="casa"
-        >
+        <button class="btn-adicionar" data-categoria="casa">
             + Adicionar
         </button>
 
@@ -103,13 +100,15 @@
 
             <h3>Gastos fixos da casa</h3>
 
-            <strong id="casaFixos">
-                R$ 0,00
-            </strong>
+            <strong id="casaFixos">R$ 0,00</strong>
 
             <p>
                 Condomínio, financiamento, internet...
             </p>
+
+            <button class="btn-lista" data-lista="casa-fixos">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -123,13 +122,15 @@
 
             <h3>Gastos variáveis da casa</h3>
 
-            <strong id="casaVariaveis">
-                R$ 0,00
-            </strong>
+            <strong id="casaVariaveis">R$ 0,00</strong>
 
             <p>
                 Mercado, delivery, lazer, compras...
             </p>
+
+            <button class="btn-lista" data-lista="casa-variaveis">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -153,10 +154,7 @@
             </div>
         </div>
 
-        <button
-            class="btn-adicionar"
-            data-categoria="luiza"
-        >
+        <button class="btn-adicionar" data-categoria="luiza">
             + Adicionar
         </button>
 
@@ -176,13 +174,15 @@
 
             <h3>Gastos com a clínica</h3>
 
-            <strong id="luizaClinica">
-                R$ 0,00
-            </strong>
+            <strong id="luizaClinica">R$ 0,00</strong>
 
             <p>
                 Clínica, materiais, cursos, impostos...
             </p>
+
+            <button class="btn-lista" data-lista="luiza-clinica">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -191,20 +191,20 @@
 
             <div class="gasto-topo">
                 <span>🌷</span>
-                <span class="tag pessoal">
-                    Pessoal
-                </span>
+                <span class="tag pessoal">Pessoal</span>
             </div>
 
             <h3>Gastos pessoais</h3>
 
-            <strong id="luizaPessoal">
-                R$ 0,00
-            </strong>
+            <strong id="luizaPessoal">R$ 0,00</strong>
 
             <p>
                 Roupas, beleza, lazer, compras...
             </p>
+
+            <button class="btn-lista" data-lista="luiza-pessoal">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -228,10 +228,7 @@
             </div>
         </div>
 
-        <button
-            class="btn-adicionar"
-            data-categoria="daniel"
-        >
+        <button class="btn-adicionar" data-categoria="daniel">
             + Adicionar
         </button>
 
@@ -244,20 +241,20 @@
 
             <div class="gasto-topo">
                 <span>👤</span>
-                <span class="tag pessoal">
-                    Pessoal
-                </span>
+                <span class="tag pessoal">Pessoal</span>
             </div>
 
             <h3>Gastos pessoais</h3>
 
-            <strong id="danielPessoal">
-                R$ 0,00
-            </strong>
+            <strong id="danielPessoal">R$ 0,00</strong>
 
             <p>
                 Compras, lazer e outras despesas
             </p>
+
+            <button class="btn-lista" data-lista="daniel-pessoal">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -281,10 +278,7 @@
             </div>
         </div>
 
-        <button
-            class="btn-adicionar"
-            data-categoria="carro"
-        >
+        <button class="btn-adicionar" data-categoria="carro">
             + Adicionar
         </button>
 
@@ -297,20 +291,20 @@
 
             <div class="gasto-topo">
                 <span>🔒</span>
-                <span class="tag fixa">
-                    Fixo
-                </span>
+                <span class="tag fixa">Fixo</span>
             </div>
 
             <h3>Gastos fixos</h3>
 
-            <strong id="carroFixos">
-                R$ 0,00
-            </strong>
+            <strong id="carroFixos">R$ 0,00</strong>
 
             <p>
                 Seguro, financiamento, estacionamento...
             </p>
+
+            <button class="btn-lista" data-lista="carro-fixos">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -319,20 +313,20 @@
 
             <div class="gasto-topo">
                 <span>⛽</span>
-                <span class="tag variavel">
-                    Variável
-                </span>
+                <span class="tag variavel">Variável</span>
             </div>
 
             <h3>Gastos variáveis</h3>
 
-            <strong id="carroVariaveis">
-                R$ 0,00
-            </strong>
+            <strong id="carroVariaveis">R$ 0,00</strong>
 
             <p>
                 Combustível, manutenção, lavagem...
             </p>
+
+            <button class="btn-lista" data-lista="carro-variaveis">
+                Lista de gastos
+            </button>
 
         </div>
 
@@ -352,7 +346,7 @@
 
             <div>
                 <h2>Cartões</h2>
-                <p>Acompanhamento das faturas</p>
+                <p>Compras e parcelas</p>
             </div>
         </div>
 
@@ -373,9 +367,25 @@
                 R$ 0,00
             </strong>
 
-            <p>
-                Fatura atual
-            </p>
+            <p>Gastos deste mês</p>
+
+            <div class="acoes-card">
+
+                <button
+                    class="btn-lista"
+                    data-lista="cartao-luiza"
+                >
+                    Lista de gastos
+                </button>
+
+                <button
+                    class="btn-adicionar pequeno"
+                    data-cartao="cartao-luiza"
+                >
+                    + Adicionar
+                </button>
+
+            </div>
 
         </div>
 
@@ -392,9 +402,25 @@
                 R$ 0,00
             </strong>
 
-            <p>
-                Fatura atual
-            </p>
+            <p>Gastos deste mês</p>
+
+            <div class="acoes-card">
+
+                <button
+                    class="btn-lista"
+                    data-lista="cartao-daniel"
+                >
+                    Lista de gastos
+                </button>
+
+                <button
+                    class="btn-adicionar pequeno"
+                    data-cartao="cartao-daniel"
+                >
+                    + Adicionar
+                </button>
+
+            </div>
 
         </div>
 
@@ -447,6 +473,17 @@
             0% concluído
         </small>
 
+        <div class="acoes-meta">
+
+            <button
+                class="btn-adicionar pequeno"
+                id="btnAdicionarMeta"
+            >
+                + Adicionar valor
+            </button>
+
+        </div>
+
     </div>
 
 </section>
@@ -465,6 +502,7 @@
                 <h2>Lançamentos do mês</h2>
                 <p>Todos os gastos registrados</p>
             </div>
+
         </div>
 
     </div>
@@ -481,15 +519,9 @@
     Feito para nós dois 🤍
 </footer><!-- =====================================
      MODAL DE GASTO
-===================================== --><div
-    class="modal"
-    id="modalGasto"
-><div class="modal-conteudo">
+===================================== --><div class="modal" id="modalGasto"><div class="modal-conteudo">
 
-    <button
-        class="fechar"
-        id="fecharGasto"
-    >
+    <button class="fechar" id="fecharGasto">
         ×
     </button>
 
@@ -511,7 +543,6 @@
                 placeholder="Ex.: Mercado"
                 required
             >
-
         </label>
 
 
@@ -526,19 +557,17 @@
                 min="0"
                 required
             >
-
         </label>
 
 
         <label>
-            Data
+            Data da compra
 
             <input
                 type="date"
                 id="data"
                 required
             >
-
         </label>
 
 
@@ -558,6 +587,82 @@
             </select>
 
         </label>
+
+
+        <label>
+            Forma de pagamento
+
+            <select id="pagamento">
+
+                <option value="pix">
+                    PIX / Débito
+                </option>
+
+                <option value="dinheiro">
+                    Dinheiro
+                </option>
+
+                <option value="cartao-luiza">
+                    Cartão Luiza
+                </option>
+
+                <option value="cartao-daniel">
+                    Cartão Daniel
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <div id="campoParcelamento">
+
+            <label>
+
+                Esta compra é parcelada?
+
+                <select id="parcelado">
+
+                    <option value="nao">
+                        Não
+                    </option>
+
+                    <option value="sim">
+                        Sim
+                    </option>
+
+                </select>
+
+            </label>
+
+        </div>
+
+
+        <div
+            id="campoParcelas"
+            class="campo-oculto"
+        >
+
+            <label>
+
+                Número de parcelas
+
+                <input
+                    type="number"
+                    id="numeroParcelas"
+                    min="2"
+                    max="60"
+                    value="2"
+                >
+
+            </label>
+
+            <div
+                id="previewParcelamento"
+                class="preview-parcelamento"
+            ></div>
+
+        </div>
 
 
         <label>
@@ -584,15 +689,9 @@
 
 </div><!-- =====================================
      MODAL DE RECEITAS
-===================================== --><div
-    class="modal"
-    id="modalReceitas"
-><div class="modal-conteudo">
+===================================== --><div class="modal" id="modalReceitas"><div class="modal-conteudo">
 
-    <button
-        class="fechar"
-        id="fecharReceitas"
-    >
+    <button class="fechar" id="fecharReceitas">
         ×
     </button>
 
@@ -652,6 +751,71 @@
             class="btn-confirmar"
         >
             Salvar receitas
+        </button>
+
+    </form>
+
+</div>
+
+</div><!-- =====================================
+     MODAL DE LISTA
+===================================== --><div class="modal" id="modalLista"><div class="modal-conteudo lista-modal">
+
+    <button class="fechar" id="fecharLista">
+        ×
+    </button>
+
+    <p class="mini-titulo">
+        LANÇAMENTOS
+    </p>
+
+    <h2 id="tituloLista">
+        Lista de gastos
+    </h2>
+
+    <div
+        id="conteudoLista"
+        class="conteudo-lista"
+    ></div>
+
+</div>
+
+</div><!-- =====================================
+     MODAL DE META
+===================================== --><div class="modal" id="modalMeta"><div class="modal-conteudo">
+
+    <button class="fechar" id="fecharMeta">
+        ×
+    </button>
+
+    <p class="mini-titulo">
+        RESERVA DE EMERGÊNCIA
+    </p>
+
+    <h2>Adicionar valor</h2>
+
+    <form id="formMeta">
+
+        <label>
+
+            Quanto vocês guardaram?
+
+            <input
+                type="number"
+                id="valorMetaInput"
+                step="0.01"
+                min="0"
+                placeholder="0,00"
+                required
+            >
+
+        </label>
+
+        <button
+            type="submit"
+            class="btn-confirmar"
+        >
+            Adicionar à meta
         </button>
 
     </form>
