@@ -17,8 +17,10 @@
    - Saldo
    - Disponível
    - Gastos fixos totais
-   - Outros gastos totais
-   - Salvamento automático no navegador
+   - Gastos variáveis / outros totais
+   - Edição de gastos
+   - Edição da reserva
+   - Salvamento automático
 ========================================================= */
 
 
@@ -36,9 +38,6 @@ try {
     dados = null;
 }
 
-
-/* Caso não exista nenhum dado */
-
 if (!dados) {
 
     dados = {
@@ -50,9 +49,7 @@ if (!dados) {
         },
 
         gastos: []
-
     };
-
 }
 
 
@@ -65,13 +62,10 @@ if (!dados.receitas) {
         daniel: 0,
         outras: 0
     };
-
 }
 
 if (!dados.gastos) {
-
     dados.gastos = [];
-
 }
 
 
@@ -80,12 +74,17 @@ if (!dados.gastos) {
 dados.gastos.forEach(function(gasto) {
 
     if (typeof gasto.pago === "undefined") {
-
         gasto.pago = false;
-
     }
-
 });
+
+
+/* =========================================================
+   CONTROLE DE EDIÇÃO
+========================================================= */
+
+let gastoEmEdicaoId = null;
+let editandoMeta = false;
 
 
 /* =========================================================
@@ -124,7 +123,6 @@ function salvarDados() {
         "nossaVidaFinanceira",
         JSON.stringify(dados)
     );
-
 }
 
 
@@ -141,7 +139,6 @@ function dinheiro(valor) {
             currency: "BRL"
         }
     );
-
 }
 
 
@@ -167,7 +164,6 @@ function hoje() {
         ).padStart(2, "0");
 
     return `${ano}-${mes}-${dia}`;
-
 }
 
 
@@ -223,7 +219,6 @@ function adicionarMes(data, quantidade) {
         ).padStart(2, "0");
 
     return `${anoFinal}-${mesFinal}-${diaFormatado}`;
-
 }
 
 
@@ -232,6 +227,10 @@ function adicionarMes(data, quantidade) {
 ========================================================= */
 
 function formatarData(data) {
+
+    if (!data) {
+        return "";
+    }
 
     const partes =
         data.split("-");
@@ -243,7 +242,6 @@ function formatarData(data) {
         "/" +
         partes[0]
     );
-
 }
 
 
@@ -260,7 +258,6 @@ function textoSeguro(texto) {
         texto;
 
     return div.innerHTML;
-
 }
 
 
@@ -296,223 +293,7 @@ const nomesCategorias = {
 
     "cartao-daniel":
         "Gastos do cartão do Daniel"
-
 };
-
-
-/* =========================================================
-   ABRIR MODAL DE GASTO
-========================================================= */
-
-function abrirGasto(categoria) {
-
-    const select =
-        document.getElementById(
-            "subcategoria"
-        );
-
-    if (!select) {
-        return;
-    }
-
-    select.innerHTML = "";
-
-
-    if (categoria === "casa") {
-
-        adicionarOpcao(
-            select,
-            "casa-fixos",
-            "Casa — gasto fixo"
-        );
-
-        adicionarOpcao(
-            select,
-            "casa-variaveis",
-            "Casa — gasto variável"
-        );
-
-    }
-
-
-    if (categoria === "luiza") {
-
-        adicionarOpcao(
-            select,
-            "luiza-clinica",
-            "Luiza — clínica"
-        );
-
-        adicionarOpcao(
-            select,
-            "luiza-pessoal",
-            "Luiza — pessoal"
-        );
-
-    }
-
-
-    if (categoria === "daniel") {
-
-        adicionarOpcao(
-            select,
-            "daniel-pessoal",
-            "Daniel — pessoal"
-        );
-
-    }
-
-
-    if (categoria === "carro") {
-
-        adicionarOpcao(
-            select,
-            "carro-fixos",
-            "Carro — gasto fixo"
-        );
-
-        adicionarOpcao(
-            select,
-            "carro-variaveis",
-            "Carro — gasto variável"
-        );
-
-    }
-
-
-    if (categoria === "cartao-luiza") {
-
-        adicionarOpcao(
-            select,
-            "cartao-luiza",
-            "Cartão Luiza"
-        );
-
-    }
-
-
-    if (categoria === "cartao-daniel") {
-
-        adicionarOpcao(
-            select,
-            "cartao-daniel",
-            "Cartão Daniel"
-        );
-
-    }
-
-
-    formGasto.dataset.categoria =
-        categoria;
-
-
-    const campoData =
-        document.getElementById("data");
-
-    if (campoData) {
-
-        campoData.value =
-            hoje();
-
-    }
-
-
-    document.getElementById(
-        "descricao"
-    ).value = "";
-
-
-    document.getElementById(
-        "valor"
-    ).value = "";
-
-
-    const pagamento =
-        document.getElementById(
-            "pagamento"
-        );
-
-
-    if (
-        categoria === "cartao-luiza"
-    ) {
-
-        pagamento.value =
-            "cartao-luiza";
-
-    }
-
-    else if (
-        categoria === "cartao-daniel"
-    ) {
-
-        pagamento.value =
-            "cartao-daniel";
-
-    }
-
-    else {
-
-        pagamento.value =
-            "pix";
-
-    }
-
-
-    document.getElementById(
-        "parcelado"
-    ).value =
-        "nao";
-
-
-    document.getElementById(
-        "numeroParcelas"
-    ).value =
-        2;
-
-
-    const campoParcelas =
-        document.getElementById(
-            "campoParcelas"
-        );
-
-
-    if (campoParcelas) {
-
-        campoParcelas.classList.add(
-            "campo-oculto"
-        );
-
-    }
-
-
-    atualizarPreviewParcelamento();
-
-
-    modalGasto.classList.add(
-        "aberto"
-    );
-
-
-    setTimeout(
-        function() {
-
-            const campo =
-                document.getElementById(
-                    "descricao"
-                );
-
-            if (campo) {
-
-                campo.focus();
-
-            }
-
-        },
-        100
-    );
-
-}
 
 
 /* =========================================================
@@ -539,12 +320,439 @@ function adicionarOpcao(
     select.appendChild(
         option
     );
-
 }
 
 
 /* =========================================================
-   FECHAR MODAIS
+   PREENCHER CATEGORIAS
+========================================================= */
+
+function preencherSubcategorias(categoria) {
+
+    const select =
+        document.getElementById(
+            "subcategoria"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    select.innerHTML = "";
+
+    if (categoria === "casa") {
+
+        adicionarOpcao(
+            select,
+            "casa-fixos",
+            "Casa — gasto fixo"
+        );
+
+        adicionarOpcao(
+            select,
+            "casa-variaveis",
+            "Casa — gasto variável"
+        );
+    }
+
+    if (categoria === "luiza") {
+
+        adicionarOpcao(
+            select,
+            "luiza-clinica",
+            "Luiza — clínica"
+        );
+
+        adicionarOpcao(
+            select,
+            "luiza-pessoal",
+            "Luiza — pessoal"
+        );
+    }
+
+    if (categoria === "daniel") {
+
+        adicionarOpcao(
+            select,
+            "daniel-pessoal",
+            "Daniel — pessoal"
+        );
+    }
+
+    if (categoria === "carro") {
+
+        adicionarOpcao(
+            select,
+            "carro-fixos",
+            "Carro — gasto fixo"
+        );
+
+        adicionarOpcao(
+            select,
+            "carro-variaveis",
+            "Carro — gasto variável"
+        );
+    }
+
+    if (categoria === "cartao-luiza") {
+
+        adicionarOpcao(
+            select,
+            "cartao-luiza",
+            "Cartão Luiza"
+        );
+    }
+
+    if (categoria === "cartao-daniel") {
+
+        adicionarOpcao(
+            select,
+            "cartao-daniel",
+            "Cartão Daniel"
+        );
+    }
+}
+
+
+/* =========================================================
+   ABRIR MODAL PARA NOVO GASTO
+========================================================= */
+
+function abrirGasto(categoria) {
+
+    gastoEmEdicaoId = null;
+
+    preencherSubcategorias(categoria);
+
+    formGasto.dataset.categoria =
+        categoria;
+
+    const campoData =
+        document.getElementById("data");
+
+    if (campoData) {
+        campoData.value =
+            hoje();
+    }
+
+    document.getElementById(
+        "descricao"
+    ).value = "";
+
+    document.getElementById(
+        "valor"
+    ).value = "";
+
+    const pagamento =
+        document.getElementById(
+            "pagamento"
+        );
+
+    if (categoria === "cartao-luiza") {
+
+        pagamento.value =
+            "cartao-luiza";
+
+    } else if (
+        categoria === "cartao-daniel"
+    ) {
+
+        pagamento.value =
+            "cartao-daniel";
+
+    } else {
+
+        pagamento.value =
+            "pix";
+    }
+
+    document.getElementById(
+        "parcelado"
+    ).value =
+        "nao";
+
+    document.getElementById(
+        "numeroParcelas"
+    ).value =
+        2;
+
+    const campoParcelas =
+        document.getElementById(
+            "campoParcelas"
+        );
+
+    if (campoParcelas) {
+
+        campoParcelas.classList.add(
+            "campo-oculto"
+        );
+    }
+
+    atualizarPreviewParcelamento();
+
+    atualizarTituloModalGasto();
+
+    modalGasto.classList.add(
+        "aberto"
+    );
+
+    setTimeout(
+        function() {
+
+            const campo =
+                document.getElementById(
+                    "descricao"
+                );
+
+            if (campo) {
+                campo.focus();
+            }
+
+        },
+        100
+    );
+}
+
+
+/* =========================================================
+   TITULO DO MODAL DE GASTO
+========================================================= */
+
+function atualizarTituloModalGasto() {
+
+    const titulo =
+        modalGasto
+            ? modalGasto.querySelector(
+                ".modal-conteudo h2"
+            )
+            : null;
+
+    const botao =
+        formGasto
+            ? formGasto.querySelector(
+                ".btn-confirmar"
+            )
+            : null;
+
+    if (gastoEmEdicaoId !== null) {
+
+        if (titulo) {
+            titulo.textContent =
+                "Editar gasto";
+        }
+
+        if (botao) {
+            botao.textContent =
+                "Salvar alterações";
+        }
+
+    } else {
+
+        if (titulo) {
+            titulo.textContent =
+                "Adicionar gasto";
+        }
+
+        if (botao) {
+            botao.textContent =
+                "Adicionar gasto";
+        }
+    }
+}
+
+
+/* =========================================================
+   EDITAR GASTO
+========================================================= */
+
+function editarGasto(id) {
+
+    const gasto =
+        dados.gastos.find(
+            function(item) {
+                return item.id === id;
+            }
+        );
+
+    if (!gasto) {
+        return;
+    }
+
+    gastoEmEdicaoId =
+        id;
+
+    /*
+       Descobre qual seção deve ser usada
+       para preencher o select.
+    */
+
+    let categoriaModal =
+        gasto.categoria;
+
+    /*
+       Gastos antigos podem ter categoria
+       diferente da subcategoria.
+    */
+
+    if (
+        !categoriaModal &&
+        gasto.subcategoria
+    ) {
+
+        if (
+            gasto.subcategoria.startsWith(
+                "casa-"
+            )
+        ) {
+            categoriaModal = "casa";
+        }
+
+        else if (
+            gasto.subcategoria.startsWith(
+                "luiza-"
+            )
+        ) {
+            categoriaModal = "luiza";
+        }
+
+        else if (
+            gasto.subcategoria.startsWith(
+                "daniel-"
+            )
+        ) {
+            categoriaModal = "daniel";
+        }
+
+        else if (
+            gasto.subcategoria.startsWith(
+                "carro-"
+            )
+        ) {
+            categoriaModal = "carro";
+        }
+
+        else if (
+            gasto.subcategoria ===
+            "cartao-luiza"
+        ) {
+            categoriaModal =
+                "cartao-luiza";
+        }
+
+        else if (
+            gasto.subcategoria ===
+            "cartao-daniel"
+        ) {
+            categoriaModal =
+                "cartao-daniel";
+        }
+    }
+
+
+    preencherSubcategorias(
+        categoriaModal
+    );
+
+    formGasto.dataset.categoria =
+        categoriaModal;
+
+
+    document.getElementById(
+        "descricao"
+    ).value =
+        gasto.descricao || "";
+
+
+    document.getElementById(
+        "valor"
+    ).value =
+        gasto.valor || "";
+
+
+    document.getElementById(
+        "data"
+    ).value =
+        gasto.data || hoje();
+
+
+    document.getElementById(
+        "tipo"
+    ).value =
+        gasto.tipo || "variavel";
+
+
+    document.getElementById(
+        "pagamento"
+    ).value =
+        gasto.pagamento || "pix";
+
+
+    const subcategoria =
+        document.getElementById(
+            "subcategoria"
+        );
+
+    if (subcategoria) {
+
+        subcategoria.value =
+            gasto.subcategoria || "";
+    }
+
+
+    /*
+       Ao editar uma parcela existente,
+       não alteramos a estrutura das parcelas.
+       Editamos somente aquele lançamento.
+    */
+
+    document.getElementById(
+        "parcelado"
+    ).value =
+        gasto.parcelado
+            ? "sim"
+            : "nao";
+
+
+    const campoParcelas =
+        document.getElementById(
+            "campoParcelas"
+        );
+
+    if (campoParcelas) {
+
+        if (gasto.parcelado) {
+
+            campoParcelas.classList.remove(
+                "campo-oculto"
+            );
+
+        } else {
+
+            campoParcelas.classList.add(
+                "campo-oculto"
+            );
+        }
+    }
+
+
+    document.getElementById(
+        "numeroParcelas"
+    ).value =
+        gasto.totalParcelas || 2;
+
+
+    atualizarPreviewParcelamento();
+
+    atualizarTituloModalGasto();
+
+    modalGasto.classList.add(
+        "aberto"
+    );
+}
+
+
+/* =========================================================
+   FECHAR MODAL DE GASTO
 ========================================================= */
 
 function fecharGasto() {
@@ -554,11 +762,18 @@ function fecharGasto() {
         modalGasto.classList.remove(
             "aberto"
         );
-
     }
 
+    gastoEmEdicaoId =
+        null;
+
+    atualizarTituloModalGasto();
 }
 
+
+/* =========================================================
+   FECHAR MODAL DE RECEITAS
+========================================================= */
 
 function fecharReceitas() {
 
@@ -567,9 +782,7 @@ function fecharReceitas() {
         modalReceitas.classList.remove(
             "aberto"
         );
-
     }
-
 }
 
 
@@ -582,14 +795,12 @@ const fecharGastoBtn =
         "fecharGasto"
     );
 
-
 if (fecharGastoBtn) {
 
     fecharGastoBtn.addEventListener(
         "click",
         fecharGasto
     );
-
 }
 
 
@@ -598,14 +809,12 @@ const fecharReceitasBtn =
         "fecharReceitas"
     );
 
-
 if (fecharReceitasBtn) {
 
     fecharReceitasBtn.addEventListener(
         "click",
         fecharReceitas
     );
-
 }
 
 
@@ -613,7 +822,6 @@ const fecharListaBtn =
     document.getElementById(
         "fecharLista"
     );
-
 
 if (fecharListaBtn) {
 
@@ -624,10 +832,8 @@ if (fecharListaBtn) {
             modalLista.classList.remove(
                 "aberto"
             );
-
         }
     );
-
 }
 
 
@@ -635,7 +841,6 @@ const fecharMetaBtn =
     document.getElementById(
         "fecharMeta"
     );
-
 
 if (fecharMetaBtn) {
 
@@ -647,9 +852,12 @@ if (fecharMetaBtn) {
                 "aberto"
             );
 
+            editandoMeta =
+                false;
+
+            atualizarTituloModalMeta();
         }
     );
-
 }
 
 
@@ -658,9 +866,22 @@ if (fecharMetaBtn) {
 ========================================================= */
 
 document
-    .querySelectorAll(".btn-adicionar")
+    .querySelectorAll(
+        ".btn-adicionar"
+    )
     .forEach(
         function(botao) {
+
+            /*
+               Ignora o botão da meta.
+            */
+
+            if (
+                botao.id ===
+                "btnAdicionarMeta"
+            ) {
+                return;
+            }
 
             botao.addEventListener(
                 "click",
@@ -669,10 +890,8 @@ document
                     abrirGasto(
                         botao.dataset.categoria
                     );
-
                 }
             );
-
         }
     );
 
@@ -682,7 +901,9 @@ document
 ========================================================= */
 
 document
-    .querySelectorAll("[data-cartao]")
+    .querySelectorAll(
+        "[data-cartao]"
+    )
     .forEach(
         function(botao) {
 
@@ -693,10 +914,8 @@ document
                     abrirGasto(
                         botao.dataset.cartao
                     );
-
                 }
             );
-
         }
     );
 
@@ -727,7 +946,6 @@ function abrirReceitas() {
 
         campoLuiza.value =
             dados.receitas.luiza || "";
-
     }
 
 
@@ -735,7 +953,6 @@ function abrirReceitas() {
 
         campoDaniel.value =
             dados.receitas.daniel || "";
-
     }
 
 
@@ -743,14 +960,12 @@ function abrirReceitas() {
 
         campoOutras.value =
             dados.receitas.outras || "";
-
     }
 
 
     modalReceitas.classList.add(
         "aberto"
     );
-
 }
 
 
@@ -759,14 +974,12 @@ const btnReceitas =
         "btnReceitas"
     );
 
-
 if (btnReceitas) {
 
     btnReceitas.addEventListener(
         "click",
         abrirReceitas
     );
-
 }
 
 
@@ -779,7 +992,6 @@ const campoParcelado =
         "parcelado"
     );
 
-
 if (campoParcelado) {
 
     campoParcelado.addEventListener(
@@ -791,31 +1003,25 @@ if (campoParcelado) {
                     "campoParcelas"
                 );
 
-
             if (
-                this.value === "sim"
+                this.value ===
+                "sim"
             ) {
 
                 campo.classList.remove(
                     "campo-oculto"
                 );
 
-            }
-
-            else {
+            } else {
 
                 campo.classList.add(
                     "campo-oculto"
                 );
-
             }
 
-
             atualizarPreviewParcelamento();
-
         }
     );
-
 }
 
 
@@ -824,14 +1030,12 @@ const campoNumeroParcelas =
         "numeroParcelas"
     );
 
-
 if (campoNumeroParcelas) {
 
     campoNumeroParcelas.addEventListener(
         "input",
         atualizarPreviewParcelamento
     );
-
 }
 
 
@@ -840,14 +1044,12 @@ const campoValor =
         "valor"
     );
 
-
 if (campoValor) {
 
     campoValor.addEventListener(
         "input",
         atualizarPreviewParcelamento
     );
-
 }
 
 
@@ -867,14 +1069,11 @@ function atualizarPreviewParcelamento() {
             "previewParcelamento"
         );
 
-
     if (
         !campoParcelado ||
         !preview
     ) {
-
         return;
-
     }
 
 
@@ -887,7 +1086,6 @@ function atualizarPreviewParcelamento() {
             "";
 
         return;
-
     }
 
 
@@ -917,7 +1115,6 @@ function atualizarPreviewParcelamento() {
             "Informe o valor e o número de parcelas.";
 
         return;
-
     }
 
 
@@ -938,14 +1135,12 @@ function atualizarPreviewParcelamento() {
 
         Total da compra:
         ${dinheiro(valor)}
-
     `;
-
 }
 
 
 /* =========================================================
-   SALVAR GASTO
+   SALVAR / EDITAR GASTO
 ========================================================= */
 
 if (formGasto) {
@@ -1037,20 +1232,132 @@ if (formGasto) {
                 );
 
                 return;
-
             }
 
+
+            /* =====================================================
+               MODO EDIÇÃO
+            ===================================================== */
+
+            if (
+                gastoEmEdicaoId !== null
+            ) {
+
+                const gasto =
+                    dados.gastos.find(
+                        function(item) {
+                            return (
+                                item.id ===
+                                gastoEmEdicaoId
+                            );
+                        }
+                    );
+
+
+                if (!gasto) {
+
+                    alert(
+                        "Não foi possível encontrar este gasto."
+                    );
+
+                    fecharGasto();
+
+                    return;
+                }
+
+
+                gasto.descricao =
+                    descricao;
+
+                gasto.valor =
+                    valor;
+
+                /*
+                   Se não for parcelado,
+                   atualizamos também o valor total.
+                */
+
+                if (!gasto.parcelado) {
+
+                    gasto.valorTotal =
+                        valor;
+                }
+
+                gasto.data =
+                    data;
+
+                gasto.tipo =
+                    tipo;
+
+                gasto.pagamento =
+                    pagamento;
+
+                gasto.subcategoria =
+                    subcategoria;
+
+
+                /*
+                   Mantém a categoria original,
+                   caso exista.
+                */
+
+                if (
+                    formGasto.dataset.categoria
+                ) {
+
+                    gasto.categoria =
+                        formGasto.dataset.categoria;
+                }
+
+
+                /*
+                   Atualiza cartão
+                */
+
+                delete gasto.cartao;
+
+
+                if (
+                    pagamento ===
+                    "cartao-luiza"
+                ) {
+
+                    gasto.cartao =
+                        "cartao-luiza";
+                }
+
+
+                if (
+                    pagamento ===
+                    "cartao-daniel"
+                ) {
+
+                    gasto.cartao =
+                        "cartao-daniel";
+                }
+
+
+                salvarDados();
+
+                atualizarTudo();
+
+                fecharGasto();
+
+                return;
+            }
+
+
+            /* =====================================================
+               NOVO GASTO À VISTA
+            ===================================================== */
 
             const categoria =
                 formGasto.dataset.categoria;
 
 
-            /* =====================================================
-               GASTO À VISTA
-            ===================================================== */
-
             if (
-                parcelado !== "sim"
+                parcelado !==
+                "sim"
             ) {
 
                 const novoGasto = {
@@ -1096,7 +1403,6 @@ if (formGasto) {
 
                     pago:
                         false
-
                 };
 
 
@@ -1107,7 +1413,6 @@ if (formGasto) {
 
                     novoGasto.cartao =
                         "cartao-luiza";
-
                 }
 
 
@@ -1118,19 +1423,17 @@ if (formGasto) {
 
                     novoGasto.cartao =
                         "cartao-daniel";
-
                 }
 
 
                 dados.gastos.push(
                     novoGasto
                 );
-
             }
 
 
             /* =====================================================
-               GASTO PARCELADO
+               NOVO GASTO PARCELADO
             ===================================================== */
 
             else {
@@ -1144,7 +1447,6 @@ if (formGasto) {
                     );
 
                     return;
-
                 }
 
 
@@ -1241,7 +1543,6 @@ if (formGasto) {
 
                         pago:
                             false
-
                     };
 
 
@@ -1252,7 +1553,6 @@ if (formGasto) {
 
                         parcela.cartao =
                             "cartao-luiza";
-
                     }
 
 
@@ -1263,16 +1563,13 @@ if (formGasto) {
 
                         parcela.cartao =
                             "cartao-daniel";
-
                     }
 
 
                     dados.gastos.push(
                         parcela
                     );
-
                 }
-
             }
 
 
@@ -1281,10 +1578,8 @@ if (formGasto) {
             atualizarTudo();
 
             fecharGasto();
-
         }
     );
-
 }
 
 
@@ -1330,10 +1625,8 @@ if (formReceitas) {
             atualizarTudo();
 
             fecharReceitas();
-
         }
     );
-
 }
 
 
@@ -1372,132 +1665,9 @@ function gastosDoMes() {
 
                 data.getFullYear() ===
                 ano
-
             );
-
         }
     );
-
-}
-
-
-/* =========================================================
-   CRIAR CARDS DE FIXOS E OUTROS
-========================================================= */
-
-function criarResumoFixosVariaveis() {
-
-    const resumo =
-        document.querySelector(
-            ".resumo"
-        );
-
-    if (!resumo) {
-        return;
-    }
-
-
-    /* Evita criar os cards novamente */
-
-    if (
-        document.getElementById(
-            "cardGastosFixos"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    const cardFixos =
-        document.createElement(
-            "div"
-        );
-
-    cardFixos.className =
-        "card resumo-card";
-
-    cardFixos.id =
-        "cardGastosFixos";
-
-
-    cardFixos.innerHTML = `
-
-        <span>🔒 Gastos fixos</span>
-
-        <strong id="totalGastosFixos">
-            R$ 0,00
-        </strong>
-
-        <small>Compromissos fixos</small>
-
-    `;
-
-
-    const cardOutros =
-        document.createElement(
-            "div"
-        );
-
-    cardOutros.className =
-        "card resumo-card";
-
-    cardOutros.id =
-        "cardOutrosGastos";
-
-
-    cardOutros.innerHTML = `
-
-        <span>🛒 Outros gastos</span>
-
-        <strong id="totalOutrosGastos">
-            R$ 0,00
-        </strong>
-
-        <small>Gastos variáveis</small>
-
-    `;
-
-
-    const cardPercentual =
-        document.getElementById(
-            "percentual"
-        );
-
-
-    const elementoPercentual =
-        cardPercentual
-            ? cardPercentual.closest(".card")
-            : null;
-
-
-    if (elementoPercentual) {
-
-        resumo.insertBefore(
-            cardFixos,
-            elementoPercentual
-        );
-
-        resumo.insertBefore(
-            cardOutros,
-            elementoPercentual
-        );
-
-    }
-
-    else {
-
-        resumo.appendChild(
-            cardFixos
-        );
-
-        resumo.appendChild(
-            cardOutros
-        );
-
-    }
-
 }
 
 
@@ -1506,9 +1676,6 @@ function criarResumoFixosVariaveis() {
 ========================================================= */
 
 function atualizarTudo() {
-
-    criarResumoFixosVariaveis();
-
 
     const gastos =
         gastosDoMes();
@@ -1522,22 +1689,18 @@ function atualizarTudo() {
         Number(
             dados.receitas.luiza || 0
         )
-
         +
-
         Number(
             dados.receitas.daniel || 0
         )
-
         +
-
         Number(
             dados.receitas.outras || 0
         );
 
 
     /* =====================================================
-       TODOS OS GASTOS DO MÊS
+       TODOS OS GASTOS
     ===================================================== */
 
     const totalGastos =
@@ -1545,7 +1708,7 @@ function atualizarTudo() {
 
 
     /* =====================================================
-       SOMENTE O QUE JÁ FOI PAGO
+       TOTAL PAGO
     ===================================================== */
 
     const totalPago =
@@ -1558,7 +1721,7 @@ function atualizarTudo() {
 
 
     /* =====================================================
-       O QUE AINDA FALTA PAGAR
+       PENDENTES
     ===================================================== */
 
     const totalPendente =
@@ -1567,62 +1730,16 @@ function atualizarTudo() {
 
 
     /* =====================================================
-       GASTOS FIXOS
-    ===================================================== */
-
-    const totalGastosFixos =
-        somar(
-            gastos.filter(
-                gasto =>
-                    gasto.tipo === "fixo"
-            )
-        );
-
-
-    /* =====================================================
-       OUTROS GASTOS
-       Tudo que não for fixo
-    ===================================================== */
-
-    const totalOutrosGastos =
-        somar(
-            gastos.filter(
-                gasto =>
-                    gasto.tipo !== "fixo"
-            )
-        );
-
-
-    /* =====================================================
        SALDO
-
-       Agora o saldo considera somente aquilo
-       que já foi efetivamente pago.
-
-       Exemplo:
-
-       Receita: R$ 10.000
-       Pago:    R$ 1.500
-
-       Saldo:   R$ 8.500
-
-       Quando um gasto pendente de R$ 500
-       for marcado como pago:
-
-       Saldo:   R$ 8.000
     ===================================================== */
 
     const saldo =
         receitas -
-        totalPago;
+        totalGastos;
 
 
     /* =====================================================
-       DISPONÍVEL
-
-       Mantemos o mesmo cálculo do saldo,
-       pois representa o dinheiro disponível
-       neste momento.
+       DISPONÍVEL AGORA
     ===================================================== */
 
     const disponivel =
@@ -1631,13 +1748,11 @@ function atualizarTudo() {
 
 
     /* =====================================================
-       PERCENTUAL DE GASTOS
-
-       Aqui usamos o total de gastos do mês,
-       incluindo pagos + pendentes.
+       PERCENTUAL
     ===================================================== */
 
-    let percentual = 0;
+    let percentual =
+        0;
 
 
     if (
@@ -1649,8 +1764,43 @@ function atualizarTudo() {
                 totalGastos /
                 receitas
             ) * 100;
-
     }
+
+
+    /* =====================================================
+       GASTOS FIXOS TOTAIS
+    ===================================================== */
+
+    const gastosFixos =
+        somar(
+            gastos.filter(
+                function(gasto) {
+
+                    return (
+                        gasto.tipo ===
+                        "fixo"
+                    );
+                }
+            )
+        );
+
+
+    /* =====================================================
+       OUTROS / VARIÁVEIS TOTAIS
+    ===================================================== */
+
+    const gastosVariaveis =
+        somar(
+            gastos.filter(
+                function(gasto) {
+
+                    return (
+                        gasto.tipo !==
+                        "fixo"
+                    );
+                }
+            )
+        );
 
 
     /* =====================================================
@@ -1687,23 +1837,10 @@ function atualizarTudo() {
         );
 
 
-    const totalFixosElemento =
-        document.getElementById(
-            "totalGastosFixos"
-        );
-
-
-    const totalOutrosElemento =
-        document.getElementById(
-            "totalOutrosGastos"
-        );
-
-
     if (totalReceitas) {
 
         totalReceitas.textContent =
             dinheiro(receitas);
-
     }
 
 
@@ -1711,7 +1848,6 @@ function atualizarTudo() {
 
         totalGastosElemento.textContent =
             dinheiro(totalGastos);
-
     }
 
 
@@ -1719,7 +1855,6 @@ function atualizarTudo() {
 
         saldoElemento.textContent =
             dinheiro(saldo);
-
     }
 
 
@@ -1727,7 +1862,6 @@ function atualizarTudo() {
 
         disponivelElemento.textContent =
             dinheiro(disponivel);
-
     }
 
 
@@ -1736,27 +1870,40 @@ function atualizarTudo() {
         percentualElemento.textContent =
             percentual.toFixed(0) +
             "%";
-
     }
+
+
+    /*
+       Os campos abaixo serão criados automaticamente
+       caso você coloque os IDs no HTML:
+
+       totalFixos
+       totalVariaveis
+    */
+
+    const totalFixosElemento =
+        document.getElementById(
+            "totalFixos"
+        );
+
+
+    const totalVariaveisElemento =
+        document.getElementById(
+            "totalVariaveis"
+        );
 
 
     if (totalFixosElemento) {
 
         totalFixosElemento.textContent =
-            dinheiro(
-                totalGastosFixos
-            );
-
+            dinheiro(gastosFixos);
     }
 
 
-    if (totalOutrosElemento) {
+    if (totalVariaveisElemento) {
 
-        totalOutrosElemento.textContent =
-            dinheiro(
-                totalOutrosGastos
-            );
-
+        totalVariaveisElemento.textContent =
+            dinheiro(gastosVariaveis);
     }
 
 
@@ -1775,7 +1922,6 @@ function atualizarTudo() {
     atualizarCartoes(gastos);
 
     atualizarLancamentos(gastos);
-
 }
 
 
@@ -1821,7 +1967,6 @@ function atualizarCasa(gastos) {
 
         elementoFixos.textContent =
             dinheiro(fixos);
-
     }
 
 
@@ -1829,9 +1974,7 @@ function atualizarCasa(gastos) {
 
         elementoVariaveis.textContent =
             dinheiro(variaveis);
-
     }
-
 }
 
 
@@ -1877,7 +2020,6 @@ function atualizarLuiza(gastos) {
 
         elementoClinica.textContent =
             dinheiro(clinica);
-
     }
 
 
@@ -1885,9 +2027,7 @@ function atualizarLuiza(gastos) {
 
         elementoPessoal.textContent =
             dinheiro(pessoal);
-
     }
-
 }
 
 
@@ -1917,9 +2057,7 @@ function atualizarDaniel(gastos) {
 
         elemento.textContent =
             dinheiro(pessoal);
-
     }
-
 }
 
 
@@ -1965,7 +2103,6 @@ function atualizarCarro(gastos) {
 
         elementoFixos.textContent =
             dinheiro(fixos);
-
     }
 
 
@@ -1973,9 +2110,7 @@ function atualizarCarro(gastos) {
 
         elementoVariaveis.textContent =
             dinheiro(variaveis);
-
     }
-
 }
 
 
@@ -1990,18 +2125,19 @@ function gastoPertenceAoCartao(
 
     return (
 
-        gasto.pagamento === cartao
+        gasto.pagamento ===
+        cartao
 
         ||
 
-        gasto.cartao === cartao
+        gasto.cartao ===
+        cartao
 
         ||
 
-        gasto.subcategoria === cartao
-
+        gasto.subcategoria ===
+        cartao
     );
-
 }
 
 
@@ -2047,7 +2183,6 @@ function atualizarCartoes(gastos) {
 
         elementoLuiza.textContent =
             dinheiro(luiza);
-
     }
 
 
@@ -2055,9 +2190,7 @@ function atualizarCartoes(gastos) {
 
         elementoDaniel.textContent =
             dinheiro(daniel);
-
     }
-
 }
 
 
@@ -2080,7 +2213,6 @@ function somar(lista) {
         },
         0
     );
-
 }
 
 
@@ -2099,9 +2231,7 @@ function atualizarLancamentos(
 
 
     if (!lista) {
-
         return;
-
     }
 
 
@@ -2118,7 +2248,6 @@ function atualizarLancamentos(
         `;
 
         return;
-
     }
 
 
@@ -2130,7 +2259,6 @@ function atualizarLancamentos(
                     new Date(b.data) -
                     new Date(a.data)
                 );
-
             }
         );
 
@@ -2159,7 +2287,6 @@ function atualizarLancamentos(
                 item.classList.add(
                     "gasto-pago"
                 );
-
             }
 
 
@@ -2173,7 +2300,6 @@ function atualizarLancamentos(
 
                 parcelaTexto =
                     ` • ${gasto.parcelaAtual}/${gasto.totalParcelas}`;
-
             }
 
 
@@ -2228,17 +2354,44 @@ function atualizarLancamentos(
 
 
                     <button
+                        class="btn-editar-gasto"
+                        data-id="${gasto.id}"
+                        title="Editar gasto"
+                    >
+                        ✏️
+                    </button>
+
+
+                    <button
                         class="btn-excluir"
                         data-id="${gasto.id}"
+                        title="Excluir gasto"
                     >
-
                         🗑️
-
                     </button>
 
                 </div>
-
             `;
+
+
+            const editar =
+                item.querySelector(
+                    ".btn-editar-gasto"
+                );
+
+
+            if (editar) {
+
+                editar.addEventListener(
+                    "click",
+                    function() {
+
+                        editarGasto(
+                            gasto.id
+                        );
+                    }
+                );
+            }
 
 
             const excluir =
@@ -2256,20 +2409,16 @@ function atualizarLancamentos(
                         excluirGasto(
                             gasto.id
                         );
-
                     }
                 );
-
             }
 
 
             lista.appendChild(
                 item
             );
-
         }
     );
-
 }
 
 
@@ -2287,9 +2436,7 @@ function excluirGasto(id) {
 
 
     if (!gasto) {
-
         return;
-
     }
 
 
@@ -2304,7 +2451,6 @@ function excluirGasto(id) {
 
         mensagem =
             "Esta compra é parcelada. Deseja excluir TODAS as parcelas desta compra?";
-
     }
 
 
@@ -2315,9 +2461,7 @@ function excluirGasto(id) {
 
 
     if (!confirmar) {
-
         return;
-
     }
 
 
@@ -2333,23 +2477,19 @@ function excluirGasto(id) {
                     gasto.grupoParcela
             );
 
-    }
-
-    else {
+    } else {
 
         dados.gastos =
             dados.gastos.filter(
                 item =>
                     item.id !== id
             );
-
     }
 
 
     salvarDados();
 
     atualizarTudo();
-
 }
 
 
@@ -2372,7 +2512,6 @@ function abrirLista(categoria) {
                         gasto,
                         "cartao-luiza"
                     );
-
                 }
 
 
@@ -2385,7 +2524,6 @@ function abrirLista(categoria) {
                         gasto,
                         "cartao-daniel"
                     );
-
                 }
 
 
@@ -2393,7 +2531,6 @@ function abrirLista(categoria) {
                     gasto.subcategoria ===
                     categoria
                 );
-
             }
         );
 
@@ -2409,7 +2546,6 @@ function abrirLista(categoria) {
         titulo.textContent =
             nomesCategorias[categoria] ||
             "Lista de gastos";
-
     }
 
 
@@ -2420,9 +2556,7 @@ function abrirLista(categoria) {
 
 
     if (!conteudo) {
-
         return;
-
     }
 
 
@@ -2501,7 +2635,6 @@ function abrirLista(categoria) {
             </strong>
 
         </div>
-
     `;
 
 
@@ -2530,9 +2663,7 @@ function abrirLista(categoria) {
             class="filtro-gasto ativo"
             data-filtro="todos"
         >
-
             Todos
-
         </button>
 
 
@@ -2540,9 +2671,7 @@ function abrirLista(categoria) {
             class="filtro-gasto"
             data-filtro="pagos"
         >
-
             ✓ Pagos
-
         </button>
 
 
@@ -2550,11 +2679,8 @@ function abrirLista(categoria) {
             class="filtro-gasto"
             data-filtro="pendentes"
         >
-
             ☐ Pendentes
-
         </button>
-
     `;
 
 
@@ -2599,7 +2725,8 @@ function abrirLista(categoria) {
 
 
         if (
-            filtro === "pagos"
+            filtro ===
+            "pagos"
         ) {
 
             gastosFiltrados =
@@ -2607,12 +2734,12 @@ function abrirLista(categoria) {
                     gasto =>
                         gasto.pago
                 );
-
         }
 
 
         if (
-            filtro === "pendentes"
+            filtro ===
+            "pendentes"
         ) {
 
             gastosFiltrados =
@@ -2620,7 +2747,6 @@ function abrirLista(categoria) {
                     gasto =>
                         !gasto.pago
                 );
-
         }
 
 
@@ -2631,13 +2757,13 @@ function abrirLista(categoria) {
                     new Date(b.data) -
                     new Date(a.data)
                 );
-
             }
         );
 
 
         if (
-            gastosFiltrados.length === 0
+            gastosFiltrados.length ===
+            0
         ) {
 
             lista.innerHTML = `
@@ -2645,13 +2771,11 @@ function abrirLista(categoria) {
                 <div class="lista-vazia">
 
                     <div>
-
                         ${
                             filtro === "pagos"
                                 ? "✓"
                                 : "☐"
                         }
-
                     </div>
 
 
@@ -2667,17 +2791,14 @@ function abrirLista(categoria) {
                                     ? "Nenhum gasto pendente. 🎉"
 
                                     : "Nenhum gasto registrado."
-
                         }
 
                     </p>
 
                 </div>
-
             `;
 
             return;
-
         }
 
 
@@ -2701,7 +2822,6 @@ function abrirLista(categoria) {
                     item.classList.add(
                         "item-pago"
                     );
-
                 }
 
 
@@ -2715,7 +2835,6 @@ function abrirLista(categoria) {
 
                     parcelaTexto =
                         ` • Parcela ${gasto.parcelaAtual}/${gasto.totalParcelas}`;
-
                 }
 
 
@@ -2730,7 +2849,6 @@ function abrirLista(categoria) {
 
                     pagamentoTexto =
                         " • Cartão Luiza";
-
                 }
 
 
@@ -2741,7 +2859,6 @@ function abrirLista(categoria) {
 
                     pagamentoTexto =
                         " • Cartão Daniel";
-
                 }
 
 
@@ -2783,6 +2900,15 @@ function abrirLista(categoria) {
 
 
                     <button
+                        class="btn-editar-gasto"
+                        data-id="${gasto.id}"
+                        title="Editar gasto"
+                    >
+                        ✏️
+                    </button>
+
+
+                    <button
                         class="btn-status-pagamento
                         ${gasto.pago ? "pago" : ""}"
                         data-id="${gasto.id}"
@@ -2795,8 +2921,27 @@ function abrirLista(categoria) {
                         }
 
                     </button>
-
                 `;
+
+
+                const botaoEditar =
+                    item.querySelector(
+                        ".btn-editar-gasto"
+                    );
+
+
+                if (botaoEditar) {
+
+                    botaoEditar.addEventListener(
+                        "click",
+                        function() {
+
+                            editarGasto(
+                                gasto.id
+                            );
+                        }
+                    );
+                }
 
 
                 const botaoStatus =
@@ -2815,24 +2960,18 @@ function abrirLista(categoria) {
                                 gasto.id,
                                 categoria
                             );
-
                         }
                     );
-
                 }
 
 
                 lista.appendChild(
                     item
                 );
-
             }
         );
-
     }
 
-
-    /* Começa mostrando todos */
 
     renderizarItens(
         "todos"
@@ -2840,7 +2979,7 @@ function abrirLista(categoria) {
 
 
     /* =====================================================
-       FUNCIONAMENTO DOS FILTROS
+       FILTROS
     ===================================================== */
 
     filtros
@@ -2864,7 +3003,6 @@ function abrirLista(categoria) {
                                     btn.classList.remove(
                                         "ativo"
                                     );
-
                                 }
                             );
 
@@ -2877,10 +3015,8 @@ function abrirLista(categoria) {
                         renderizarItens(
                             botao.dataset.filtro
                         );
-
                     }
                 );
-
             }
         );
 
@@ -2888,7 +3024,6 @@ function abrirLista(categoria) {
     modalLista.classList.add(
         "aberto"
     );
-
 }
 
 
@@ -2905,42 +3040,31 @@ function alternarPagamento(
         dados.gastos.find(
             function(item) {
 
-                return item.id === id;
-
+                return (
+                    item.id === id
+                );
             }
         );
 
 
     if (!gasto) {
-
         return;
-
     }
 
-
-    /* Pendente → Pago
-       Pago → Pendente */
 
     gasto.pago =
         !gasto.pago;
 
 
-    /* Salva imediatamente */
-
     salvarDados();
 
-
-    /* Atualiza TODO o painel */
 
     atualizarTudo();
 
 
-    /* Atualiza a lista */
-
     abrirLista(
         categoria
     );
-
 }
 
 
@@ -2962,16 +3086,14 @@ document
                     abrirLista(
                         botao.dataset.lista
                     );
-
                 }
             );
-
         }
     );
 
 
 /* =========================================================
-   META
+   META / RESERVA
 ========================================================= */
 
 let valorReserva =
@@ -3026,7 +3148,6 @@ function atualizarMeta() {
             dinheiro(
                 valorReserva
             );
-
     }
 
 
@@ -3034,7 +3155,6 @@ function atualizarMeta() {
 
         progressoElemento.style.width =
             porcentagem + "%";
-
     }
 
 
@@ -3043,14 +3163,76 @@ function atualizarMeta() {
         percentualElemento.textContent =
             porcentagem.toFixed(0) +
             "% concluído";
-
     }
-
 }
 
 
 /* =========================================================
-   ADICIONAR À META
+   CRIAR BOTÃO EDITAR META
+========================================================= */
+
+function criarBotaoEditarMeta() {
+
+    const area =
+        document.querySelector(
+            ".acoes-meta"
+        );
+
+
+    if (!area) {
+        return;
+    }
+
+
+    /*
+       Evita criar o botão duas vezes.
+    */
+
+    if (
+        document.getElementById(
+            "btnEditarMeta"
+        )
+    ) {
+        return;
+    }
+
+
+    const botao =
+        document.createElement(
+            "button"
+        );
+
+
+    botao.type =
+        "button";
+
+
+    botao.className =
+        "btn-adicionar pequeno";
+
+
+    botao.id =
+        "btnEditarMeta";
+
+
+    botao.textContent =
+        "✏️ Editar reserva";
+
+
+    botao.addEventListener(
+        "click",
+        abrirEdicaoMeta
+    );
+
+
+    area.appendChild(
+        botao
+    );
+}
+
+
+/* =========================================================
+   ABRIR META PARA ADICIONAR
 ========================================================= */
 
 const btnAdicionarMeta =
@@ -3065,6 +3247,10 @@ if (btnAdicionarMeta) {
         "click",
         function() {
 
+            editandoMeta =
+                false;
+
+
             const campo =
                 document.getElementById(
                     "valorMetaInput"
@@ -3075,17 +3261,107 @@ if (btnAdicionarMeta) {
 
                 campo.value =
                     "";
-
             }
+
+
+            atualizarTituloModalMeta();
 
 
             modalMeta.classList.add(
                 "aberto"
             );
-
         }
     );
+}
 
+
+/* =========================================================
+   ABRIR EDIÇÃO DA META
+========================================================= */
+
+function abrirEdicaoMeta() {
+
+    editandoMeta =
+        true;
+
+
+    const campo =
+        document.getElementById(
+            "valorMetaInput"
+        );
+
+
+    if (campo) {
+
+        campo.value =
+            valorReserva;
+    }
+
+
+    atualizarTituloModalMeta();
+
+
+    modalMeta.classList.add(
+        "aberto"
+    );
+}
+
+
+/* =========================================================
+   TITULO DA META
+========================================================= */
+
+function atualizarTituloModalMeta() {
+
+    if (!modalMeta) {
+        return;
+    }
+
+
+    const titulo =
+        modalMeta.querySelector(
+            ".modal-conteudo h2"
+        );
+
+
+    const botao =
+        formMeta
+            ? formMeta.querySelector(
+                ".btn-confirmar"
+            )
+            : null;
+
+
+    if (editandoMeta) {
+
+        if (titulo) {
+
+            titulo.textContent =
+                "Editar reserva";
+        }
+
+
+        if (botao) {
+
+            botao.textContent =
+                "Salvar alterações";
+        }
+
+    } else {
+
+        if (titulo) {
+
+            titulo.textContent =
+                "Adicionar valor";
+        }
+
+
+        if (botao) {
+
+            botao.textContent =
+                "Adicionar à meta";
+        }
+    }
 }
 
 
@@ -3111,8 +3387,8 @@ if (formMeta) {
 
 
             if (
-                !valor ||
-                valor <= 0
+                isNaN(valor) ||
+                valor < 0
             ) {
 
                 alert(
@@ -3120,12 +3396,45 @@ if (formMeta) {
                 );
 
                 return;
-
             }
 
 
-            valorReserva +=
-                valor;
+            /*
+               EDITANDO:
+               substitui o valor atual.
+            */
+
+            if (
+                editandoMeta
+            ) {
+
+                valorReserva =
+                    valor;
+
+            }
+
+            /*
+               ADICIONANDO:
+               soma ao valor atual.
+            */
+
+            else {
+
+                if (
+                    valor <= 0
+                ) {
+
+                    alert(
+                        "Digite um valor maior que zero."
+                    );
+
+                    return;
+                }
+
+
+                valorReserva +=
+                    valor;
+            }
 
 
             localStorage.setItem(
@@ -3137,13 +3446,18 @@ if (formMeta) {
             atualizarMeta();
 
 
+            editandoMeta =
+                false;
+
+
+            atualizarTituloModalMeta();
+
+
             modalMeta.classList.remove(
                 "aberto"
             );
-
         }
     );
-
 }
 
 
@@ -3154,38 +3468,38 @@ if (formMeta) {
 function icone(categoria) {
 
     if (
-        categoria === "casa"
+        categoria ===
+        "casa"
     ) {
 
         return "🏠";
-
     }
 
 
     if (
-        categoria === "luiza"
+        categoria ===
+        "luiza"
     ) {
 
         return "👩🏻";
-
     }
 
 
     if (
-        categoria === "daniel"
+        categoria ===
+        "daniel"
     ) {
 
         return "👨🏻";
-
     }
 
 
     if (
-        categoria === "carro"
+        categoria ===
+        "carro"
     ) {
 
         return "🚗";
-
     }
 
 
@@ -3195,7 +3509,6 @@ function icone(categoria) {
     ) {
 
         return "💳";
-
     }
 
 
@@ -3205,12 +3518,67 @@ function icone(categoria) {
     ) {
 
         return "💳";
+    }
 
+
+    /*
+       Para lançamentos que possuem
+       subcategoria, tenta identificar
+       pelo começo do nome.
+    */
+
+    if (
+        typeof categoria ===
+        "string"
+    ) {
+
+        if (
+            categoria.startsWith(
+                "casa"
+            )
+        ) {
+            return "🏠";
+        }
+
+
+        if (
+            categoria.startsWith(
+                "luiza"
+            )
+        ) {
+            return "👩🏻";
+        }
+
+
+        if (
+            categoria.startsWith(
+                "daniel"
+            )
+        ) {
+            return "👨🏻";
+        }
+
+
+        if (
+            categoria.startsWith(
+                "carro"
+            )
+        ) {
+            return "🚗";
+        }
+
+
+        if (
+            categoria.startsWith(
+                "cartao"
+            )
+        ) {
+            return "💳";
+        }
     }
 
 
     return "💸";
-
 }
 
 
@@ -3227,9 +3595,7 @@ function mostrarMes() {
 
 
     if (!elemento) {
-
         return;
-
     }
 
 
@@ -3254,7 +3620,6 @@ function mostrarMes() {
 
     elemento.textContent =
         texto;
-
 }
 
 
@@ -3282,11 +3647,32 @@ document
                             "aberto"
                         );
 
-                    }
 
+                        if (
+                            modal.id ===
+                            "modalGasto"
+                        ) {
+
+                            gastoEmEdicaoId =
+                                null;
+
+                            atualizarTituloModalGasto();
+                        }
+
+
+                        if (
+                            modal.id ===
+                            "modalMeta"
+                        ) {
+
+                            editandoMeta =
+                                false;
+
+                            atualizarTituloModalMeta();
+                        }
+                    }
                 }
             );
-
         }
     );
 
@@ -3299,8 +3685,8 @@ salvarDados();
 
 mostrarMes();
 
-criarResumoFixosVariaveis();
-
 atualizarTudo();
 
 atualizarMeta();
+
+criarBotaoEditarMeta();
